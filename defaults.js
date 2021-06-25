@@ -101,7 +101,7 @@ module.exports = () => {
   const config = {
     // * Custom configuration keys * \\
     changelogTitle: CHANGELOG_TITLE,
-    skipCommands: SKIP_COMMANDS,
+    skipCommands: SKIP_COMMANDS.map((cmd) => cmd.toLowerCase()),
 
     // * Core configuration keys * \\
 
@@ -197,14 +197,18 @@ module.exports = () => {
     const typeEntry = config.types.find(
       (entry) => entry.type == typeKey && (!entry.scope || entry.scope == commit.scope)
     );
+    const skipCmdEvalTarget = `${commit.subject || ''}${
+      commit.header || ''
+    }`.toLowerCase();
+
+    // ? Ignore any commits with skip commands in them (including BCs)
+    if (config.skipCommands.some((cmd) => skipCmdEvalTarget.includes(cmd))) {
+      debug1('saw skip command in commit message; discarding immediately');
+      debug1('decision: commit discarded');
+      return;
+    }
 
     addBangNotes(commit);
-
-    // ? However, ignore any commits with skip commands in them
-    if (SKIP_COMMANDS.some((cmd) => commit.subject?.includes(cmd))) {
-      debug1('saw skip command in commit message; discarding...');
-      discard = true;
-    }
 
     // ? Still, never ignore breaking changes. Additionally, make all scopes
     // ?  and subjects bold. Scope-less subjects are made sentence case.

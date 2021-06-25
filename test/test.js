@@ -130,6 +130,16 @@ betterThanBefore.setups([
       'This reverts commit 9101112.'
     ]);
     gitDummyCommit('revert: \\"feat(X): broken-but-still-supported revert\\"');
+  },
+  function () {
+    shell.exec('git tag v0.3.0 -m "v0.3.0"');
+    gitDummyCommit([
+      'refactor(code): big bigly big change skip1! [skip ci]',
+      'BREAKING CHANGE: the change is bigly luxurious 5-stars everybody is saying'
+    ]);
+    gitDummyCommit('feat: something else skip2 [cd skip]');
+    gitDummyCommit('fix: something other skip3 [CI SKIP]');
+    gitDummyCommit('build(bore): include1 [skipcd]');
   }
 ]);
 
@@ -837,6 +847,29 @@ it('parses both default (Revert "<subject>") and custom (revert: <subject>) reve
         expect(chunk).to.include('*Feat: custom revert format*');
         expect(chunk).to.include('*"Feat(two): custom revert format 2"*');
         expect(chunk).to.include('*"feat(X): broken-but-still-supported revert"*');
+
+        done();
+      })
+    );
+});
+
+it.only('should discard ALL commits with skip commands in the subject', function (done) {
+  preparing(11);
+
+  conventionalChangelogCore({
+    config: getPreset()
+  })
+    .on('error', function (err) {
+      done(err);
+    })
+    .pipe(
+      through(function (chunk) {
+        chunk = chunk.toString();
+        expect(chunk).to.include('include1');
+        expect(chunk).to.not.include('BREAKING');
+        expect(chunk).to.not.include('skip1');
+        expect(chunk).to.not.include('skip2');
+        expect(chunk).to.not.include('skip3');
 
         done();
       })
