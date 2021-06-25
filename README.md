@@ -36,11 +36,11 @@ anyway (i.e. `feat` and `feature` commits aren't grouped under the same header).
 
 ### No longer returns Promises
 
-Calling
+Requiring and calling
 [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
-emits a promise, making the result impossible to reference in synchronized code
-(babel plugins, semantic-release configuration files, etc). This fork can be
-consumed by both sync and async code alike.
+emits a Promise, making the result impossible to reference in synchronized code
+(babel plugins, semantic-release configuration files, etc). This fork avoids
+this issue and can be consumed by both sync and async code alike.
 
 > This also means `configOverrides` cannot be a Promise.
 
@@ -54,14 +54,10 @@ and altering something like
 [`writerOpts.transform`](https://github.com/conventional-changelog-archived-repos/conventional-changelog-writer#transform)
 is difficult, especially if you only want to tweak rather than _completely
 overwrite_ it. This fork makes deep customizations, including extending rather
-than overwriting the default functionality, easier. Just pass in your
-[config object](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config)
-which will be used to [tweak the default configuration](./index.js).
-
-The standard configuration objects, i.e. of the kind passed to
-[conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits),
-are supported as well, making this plugin a drop-in replacement for the
-aforesaid.
+than overwriting the default functionality, easier. Just pass your
+[config overrides](https://github.com/conventional-changelog/conventional-changelog-config-spec),
+which will be used to _tweak_ the default configuration
+([see documentation on exported function](./index.js)).
 
 ### Simpler source organization
 
