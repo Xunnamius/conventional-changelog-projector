@@ -1,6 +1,6 @@
 'use strict';
 
-const deepmerge = require('deepmerge');
+const deepObjectAssign = require('assign-deep');
 const { isPlainObject } = require('is-plain-object');
 const debug = require('debug')(`${require(__dirname + '/package.json').name}:index`);
 
