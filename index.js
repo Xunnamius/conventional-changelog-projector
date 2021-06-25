@@ -1,7 +1,7 @@
 'use strict';
 
 const deepmerge = require('deepmerge');
-const isPlainObject = require('is-plain-object');
+const { isPlainObject } = require('is-plain-object');
 const debug = require('debug')(`${require('./package.json').name}:index`);
 
 /**
@@ -29,41 +29,45 @@ const debug = require('debug')(`${require('./package.json').name}:index`);
 module.exports = (configOverrides) => {
   const config = require('./defaults');
 
-  // ? "Carefully" merge in configuration overrides
-  Object.entries(configOverrides).forEach(([key, val]) => {
-    let handled = true;
+  if (typeof configOverrides == 'function') return configOverrides(null, config);
 
-    if (['writerOpts', 'recommendedBumpOpts'].includes(key)) {
-      if (val.generateOn) {
-        debug('merging "writerOpts.generateOn" via function chaining');
-        const _generateOn = config.writerOpts.generateOn;
-        config.writerOpts.generateOn = (...args) =>
-          val.generateOn(...[...args, _generateOn]);
-      } else if (val.transform) {
-        debug('merging "writerOpts.transform" via function chaining');
-        const _transform = config.writerOpts.transform;
-        config.writerOpts.transform = (...args) =>
-          val.transform(...[...args, _transform]);
-      } else if (val.whatBump) {
-        debug('merging "recommendedBumpOpts.whatBump" via function chaining');
-        const _whatBump = config.writerOpts.whatBump;
-        config.writerOpts.whatBump = (...args) => val.whatBump(...[...args, _whatBump]);
-      } else if (val.types) {
-        debug('merging "writerOpts.types" via array concatenation');
-        config.writerOpts.types = [...config.writerOpts.types, ...val.types];
-      } else handled = false;
-    }
+  // ? "Carefully" merge in configuration overrides if it's not a Promise
+  if (isPlainObject(configOverrides)) {
+    Object.entries(configOverrides).forEach(([key, val]) => {
+      let handled = true;
 
-    if (!handled) {
-      debug(`merging "${key}" via deepmerge`);
-      config[key] = deepmerge(config[key], val, {
-        isMergeableObject: isPlainObject,
-        arrayMerge: (_, source) => source
-      });
-    }
-  });
+      if (['writerOpts', 'recommendedBumpOpts'].includes(key)) {
+        if (val.generateOn) {
+          debug('merging "writerOpts.generateOn" via function chaining');
+          const _generateOn = config.writerOpts.generateOn;
+          config.writerOpts.generateOn = (...args) =>
+            val.generateOn(...[...args, _generateOn]);
+        } else if (val.transform) {
+          debug('merging "writerOpts.transform" via function chaining');
+          const _transform = config.writerOpts.transform;
+          config.writerOpts.transform = (...args) =>
+            val.transform(...[...args, _transform]);
+        } else if (val.whatBump) {
+          debug('merging "recommendedBumpOpts.whatBump" via function chaining');
+          const _whatBump = config.writerOpts.whatBump;
+          config.writerOpts.whatBump = (...args) => val.whatBump(...[...args, _whatBump]);
+        } else if (val.types) {
+          debug('merging "writerOpts.types" via array concatenation');
+          config.writerOpts.types = [...config.writerOpts.types, ...val.types];
+        } else handled = false;
+      }
 
-  return typeof configOverrides == 'function' ? configOverrides(null, config) : config;
+      if (!handled) {
+        debug(`merging "${key}" via deepmerge`);
+        config[key] = deepmerge(config[key], val, {
+          isMergeableObject: isPlainObject,
+          arrayMerge: (_, source) => source
+        });
+      }
+    });
+  }
+
+  return config;
 };
 
 debug.extend('exports')('exports: %O', module.exports);
