@@ -755,7 +755,7 @@ it('should only replace with link to user if it is a username', function (done) 
     );
 });
 
-it('supports multiple lines of footer information', function (done) {
+it('should support multiple lines of footer information', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -775,7 +775,7 @@ it('supports multiple lines of footer information', function (done) {
     );
 });
 
-it('does not require that types are case sensitive', function (done) {
+it('should not require that types are case sensitive', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -793,7 +793,7 @@ it('does not require that types are case sensitive', function (done) {
     );
 });
 
-it('populates breaking change if ! is present', function (done) {
+it('should populate breaking change notes if ! is present', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -813,7 +813,7 @@ it('populates breaking change if ! is present', function (done) {
     );
 });
 
-it('scopes are lowercased', function (done) {
+it('should lowercase scope strings', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -831,7 +831,7 @@ it('scopes are lowercased', function (done) {
     );
 });
 
-it('parses both default (Revert "<subject>") and custom (revert: <subject>) revert commits', function (done) {
+it('should parse default, customized, and malformed revert commits', function (done) {
   preparing(10);
 
   conventionalChangelogCore({
