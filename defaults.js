@@ -3,6 +3,7 @@
 const { readFileSync } = require('fs');
 const { toss } = require('toss-expression');
 const debug = require('debug')(`${require('./package.json').name}:defaults`);
+const semver = require('semver');
 
 // ? The preamble prefixed to any generated changelog
 const CHANGELOG_TITLE =
@@ -141,19 +142,14 @@ module.exports.writerOpts.transform = (commit, context) => {
 
   let discard = true;
   const issues = [];
-  const entry = findTypeEntry(module.exports.writerOpts.types, commit);
+  const typeKey = (commit.revert ? 'revert' : commit.type || '').toLowerCase();
+  const typeEntry = module.exports.writerOpts.types.find(
+    (t) => t.type == typeKey && (!t.scope || t.scope == commit.scope)
+  );
 
   addBangNotes(commit);
 
-  if (commit.revert) {
-    debug1('coercing to type "revert"');
-    commit.type = 'revert';
-  } else if (commit.type == 'revert') {
-    debug1('saw potentially malformed revert commit; discarding...');
-    discard = true;
-  }
-
-  // ? Add an entry in the CHANGELOG if special Release-As footer is used
+  // ? Do not discard commit if special Release-As footer is used
   if (
     (commit.footer && RELEASEAS_REGEX.test(commit.footer)) ||
     (commit.body && RELEASEAS_REGEX.test(commit.body))
@@ -185,13 +181,12 @@ module.exports.writerOpts.transform = (commit, context) => {
   });
 
   // ? Discard entries of unknown or hidden types if discard == true
-  if (discard && (entry === undefined || entry.hidden)) {
+  if (discard && (typeEntry === undefined || typeEntry.hidden)) {
     debug1('decision: commit discarded');
     return;
   } else debug1('decision: commit NOT discarded');
 
-  commit.originalType = commit.type;
-  if (entry) commit.type = entry.section;
+  if (typeEntry) commit.type = typeEntry.section;
   if (commit.scope == '*') commit.scope = '';
   if (typeof commit.hash == 'string') commit.shortHash = commit.hash.substring(0, 7);
 
@@ -236,7 +231,7 @@ module.exports.writerOpts.transform = (commit, context) => {
     if (!commit.scope) commit.subject = sentenceCase(commit.subject);
 
     // ? Italicize reverts
-    if (commit.originalType == 'revert') commit.subject = `*${commit.subject}*`;
+    if (typeEntry.type == 'revert') commit.subject = `*${commit.subject}*`;
   }
 
   // ? Remove references that already appear in the subject
