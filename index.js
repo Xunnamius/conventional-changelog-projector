@@ -2,41 +2,45 @@
 
 const deepmerge = require('deepmerge');
 const { isPlainObject } = require('is-plain-object');
-const debug = require('debug')(`${require('./package.json').name}:index`);
+const debug = require('debug')(`${require(__dirname + '/package.json').name}:index`);
 
 /**
- * Constructs and returns an conventional-changelog config preset tweaked to be
- * a tad "unconventional". See the documentation for details and differences
- * from the official conventional-changelog-conventionalcommits package.
+ * Returns an "unconventional" conventional-changelog configuration preset. See
+ * the documentation for details on the differences between this and the
+ * official `conventional-changelog-conventionalcommits` package.
  *
- * `configOverrides` is recursively merged into the default config, overwriting
- * same keys. The exceptions to this are `writerOpts.generateOn`,
- * `writerOpts.transform`, and `recommendedBumpOpts.whatBump`. Functions at
- * these keys, if present, will be invoked _after_ their original
- * implementations; when invoked, they will receive the additional parameter
- * containing the result from the original implementation. Useful for quick
- * patches to core functionality without rewriting the package.
+ * `configOverrides`, if an object, is recursively merged into the default
+ * config, overwriting same keys. The exceptions to this include
+ * `writerOpts.generateOn`, `writerOpts.transform`, and
+ * `recommendedBumpOpts.whatBump`. Functions at these keys, if present, will be
+ * invoked _after_ their original implementations; when invoked, they will
+ * receive an additional parameter containing the result from the original
+ * implementation. The other exception is `types`, which is always merged via
+ * array concatenation rather than an overwrite. Every other key is deep-merged.
  *
- * Another exception is `writerOpts.types`, which is always merged via array
- * concatenation rather than an overwrite.
+ * If `configOverrides` is a function, it should be of the form
+ * `configOverrides(config) => void`. Ancient-style callbacks also supported.
  *
- * @param
-     {typeof import('./defaults')|(err: unknown, config: typeof
-     import('./defaults')) => typeof import('./defaults')} configOverrides A
-     config object or an old-world callback function
+ * @param {((config: Record<string, unknown>) => void) | ((_: null, config:
+    Record<string, unknown>) => void)}
+    configOverrides
+    A spec-compliant conventional-changelog config object
  * @returns {typeof import('./defaults')}
  */
 module.exports = (configOverrides) => {
-  const config = require('./defaults');
+  const config = require(`${__dirname}/defaults`)();
 
-  if (typeof configOverrides == 'function') return configOverrides(null, config);
-
-  // ? "Carefully" merge in configuration overrides if it's not a Promise
-  if (isPlainObject(configOverrides)) {
+  if (typeof configOverrides == 'function') {
+    if (configOverrides.length == 2) configOverrides(null, config);
+    else configOverrides(config);
+  } else if (isPlainObject(configOverrides)) {
+    // ? "Carefully" merge in configuration overrides
     Object.entries(configOverrides).forEach(([key, val]) => {
-      let handled = true;
+      let handled = false;
 
       if (['writerOpts', 'recommendedBumpOpts'].includes(key)) {
+        handled = true;
+
         if (val.generateOn) {
           debug('merging "writerOpts.generateOn" via function chaining');
           const _generateOn = config.writerOpts.generateOn;
@@ -51,18 +55,21 @@ module.exports = (configOverrides) => {
           debug('merging "recommendedBumpOpts.whatBump" via function chaining');
           const _whatBump = config.writerOpts.whatBump;
           config.writerOpts.whatBump = (...args) => val.whatBump(...[...args, _whatBump]);
-        } else if (val.types) {
-          debug('merging "writerOpts.types" via array concatenation');
-          config.writerOpts.types = [...config.writerOpts.types, ...val.types];
         } else handled = false;
+      } else if (key == 'types') {
+        debug('merging "types" via array concatenation');
+        config.types = [...config.types, ...val];
+        handled = true;
       }
 
       if (!handled) {
         debug(`merging "${key}" via deepmerge`);
-        config[key] = deepmerge(config[key], val, {
-          isMergeableObject: isPlainObject,
-          arrayMerge: (_, source) => source
-        });
+        config[key] = !isPlainObject(config[key])
+          ? val
+          : deepmerge(config[key], val, {
+              isMergeableObject: isPlainObject,
+              arrayMerge: (_, source) => source
+            });
       }
     });
   }

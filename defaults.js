@@ -2,15 +2,15 @@
 
 const { readFileSync } = require('fs');
 const { toss } = require('toss-expression');
-const debug = require('debug')(`${require('./package.json').name}:defaults`);
+const debug = require('debug')(`${require(__dirname + '/package.json').name}:defaults`);
 const semver = require('semver');
 
 // ? The preamble prefixed to any generated changelog
 const CHANGELOG_TITLE =
   `# Changelog\n\n` +
-  `All notable changes to this project will be documented in this file.\n\n` +
-  `The format is based on [Conventional Commits](https://conventionalcommits.org),\n` +
-  `and this project adheres to [Semantic Versioning](https://semver.org).`;
+  `All notable changes to this project will be documented in this auto-generated\n` +
+  `file. The format is based on [Conventional Commits](https://conventionalcommits.org);\n` +
+  `this project adheres to [Semantic Versioning](https://semver.org).`;
 
 // ? Strings in commit messages that, when found, are skipped
 const SKIP_COMMANDS = ['[skip ci]', '[ci skip]', '[skip cd]', '[cd skip]'];
@@ -25,12 +25,15 @@ const COMMIT_TYPE_CHANGELOG_ORDER = ['feat', 'fix', 'perf', 'revert'];
 const RELEASEAS_REGEX =
   /release-as:\s*\w*@?([0-9]+\.[0-9]+\.[0-9a-z]+(-[0-9a-z.]+)?)\s*/i;
 
+// ? The character(s) used to reference issues by number on GitHub
+const ISSUE_PREFIXES = ['#'];
+
 // ? Handlebars template data
 const templates = {
-  commit: readFileSync('./templates/commit.hbs', 'utf-8'),
-  footer: readFileSync('./templates/footer.hbs', 'utf-8'),
-  header: readFileSync('./templates/header.hbs', 'utf-8'),
-  template: readFileSync('./templates/template.hbs', 'utf-8'),
+  commit: readFileSync(`${__dirname}/templates/commit.hbs`, 'utf-8'),
+  footer: readFileSync(`${__dirname}/templates/footer.hbs`, 'utf-8'),
+  header: readFileSync(`${__dirname}/templates/header.hbs`, 'utf-8'),
+  template: readFileSync(`${__dirname}/templates/template.hbs`, 'utf-8'),
   // ? Handlebars partials for property substitutions using commit context
   partials: {
     owner: '{{#if this.owner}}{{~this.owner}}{{else}}{{~@root.owner}}{{/if}}',
@@ -60,44 +63,72 @@ const expandTemplate = (template, context) => {
   return template;
 };
 
-/**
- * Adds additional breaking change notes for the special case
- * `test(system)!: hello world` but with no `BREAKING CHANGE` in body.
- *
- * @param {Record<string, unknown>} commit
- */
-const addBangNotes = ({ header, notes }) => {
-  const match = header.match(module.exports.breakingHeaderPattern);
-  if (match && notes.length == 0) {
-    const noteText = match[3]; // ? Grab description of this commit
-    notes.push({
-      text: noteText
-    });
-  }
-};
+module.exports = () => {
+  /**
+   * Adds additional breaking change notes for the special case
+   * `test(system)!: hello world` but with no `BREAKING CHANGE` in body.
+   *
+   * @param {Record<string, unknown>} commit
+   */
+  const addBangNotes = ({ header, notes }) => {
+    const match = header.match(config.parserOpts.breakingHeaderPattern);
+    if (match && notes.length == 0) {
+      const noteText = match[3]; // ? Commit subject becomes BC note text
+      notes.push({
+        text: noteText
+      });
+    }
+  };
 
-module.exports = {
-  changelogTitle: CHANGELOG_TITLE,
-  skipCommands: SKIP_COMMANDS,
-  gitRawCommitsOpts: { noMerges: null },
-  parserOpts: {
-    headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
-    breakingHeaderPattern: /^(\w*)(?:\((.*)\))?!: (.*)$/,
-    headerCorrespondence: ['type', 'scope', 'subject'],
-    mergePattern: /^Merge pull request #(\d+) from (.*)$/,
-    mergeCorrespondence: ['id', 'source'],
-    revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
-    revertCorrespondence: ['header', 'hash'],
-    issuePrefixes: ['#'],
-    noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING']
-  },
-  writerOpts: {
-    generateOn: ({ version }) => {
-      const debug1 = debug.extend('writerOpts:generateOn');
-      const decision = !!semver.valid(version) && !semver.prerelease(version);
-      debug1(`decision: ${decision}`);
-      return decision;
+  const config = {
+    // * Custom configuration keys * \\
+    changelogTitle: CHANGELOG_TITLE,
+    skipCommands: SKIP_COMMANDS,
+
+    // * Core configuration keys * \\
+
+    // conventionalChangelog and recommendedBumpOpts keys are defined below
+    gitRawCommitsOpts: {
+      // ? `null` unsets the flag passed to the git CLI, ensuring all commits are
+      // ? analyzed. `true` (old default) hides merge commits while `false` hides
+      // ? non merge commits. See also:
+      // ? https://git-scm.com/docs/git-log#Documentation/git-log.txt---no-merges
+      noMerges: null
     },
+    parserOpts: {
+      headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
+      breakingHeaderPattern: /^(\w*)(?:\((.*)\))?!: (.*)$/,
+      headerCorrespondence: ['type', 'scope', 'subject'],
+      mergePattern: /^Merge pull request #(\d+) from (.*)$/,
+      mergeCorrespondence: ['id', 'source'],
+      revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
+      revertCorrespondence: ['header', 'hash'],
+      issuePrefixes: ISSUE_PREFIXES,
+      noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING']
+    },
+    writerOpts: {
+      generateOn: ({ version }) => {
+        const debug1 = debug.extend('writerOpts:generateOn');
+        const decision = !!semver.valid(version) && !semver.prerelease(version);
+        debug1(`decision: ${decision}`);
+        return decision;
+      },
+      // transform sub-key is defined below
+      mainTemplate: templates.template,
+      // headerPartial and commitPartial sub-keys are defined below
+      footerPartial: templates.footer,
+      groupBy: 'type',
+      // ? Commit message groupings (e.g. Features) are sorted by their importance
+      commitGroupsSort: (a, b) => {
+        a = commitGroupOrder.indexOf(a.title);
+        b = commitGroupOrder.indexOf(b.title);
+        return a == -1 || b == -1 ? b - a : a - b;
+      },
+      commitsSort: ['scope', 'subject'],
+      noteGroupsSort: 'title'
+    },
+
+    // * Spec-compliant configuration keys * \\
     types: [
       { type: 'feat', section: 'Features' },
       { type: 'fix', section: 'Bug Fixes' },
@@ -111,205 +142,194 @@ module.exports = {
       { type: 'ci', section: 'Continuous Integration', hidden: true },
       { type: 'chore', section: 'Miscellaneous', hidden: true }
     ],
-    issueUrlFormat: '{{host}}/{{owner}}/{{repository}}/issues/{{id}}',
     commitUrlFormat: '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}',
     compareUrlFormat:
       '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}',
+    issueUrlFormat: '{{host}}/{{owner}}/{{repository}}/issues/{{id}}',
     userUrlFormat: '{{host}}/{{user}}',
-    issuePrefixes: ['#'],
-    mainTemplate: templates.template,
-    footerPartial: templates.footer,
-    groupBy: 'type',
-    // ? Commit message groupings (e.g. Features) are sorted by their importance
-    commitGroupsSort: (a, b) => {
-      a = commitGroupOrder.indexOf(a.title);
-      b = commitGroupOrder.indexOf(b.title);
-      return a == -1 || b == -1 ? b - a : a - b;
-    },
-    commitsSort: ['scope', 'subject'],
-    noteGroupsSort: 'title'
-  }
-};
+    issuePrefixes: ISSUE_PREFIXES
+  };
 
-const commitGroupOrder = COMMIT_TYPE_CHANGELOG_ORDER.map(
-  (type) =>
-    module.exports.writerOpts.types.find((obj) => obj.type == type).section ||
-    toss(new Error(`unmatched commit type "${type}" in COMMIT_TYPE_CHANGELOG_ORDER`))
-);
+  config.writerOpts.transform = (commit, context) => {
+    const debug1 = debug.extend('writerOpts:transform');
 
-module.exports.writerOpts.transform = (commit, context) => {
-  const debug1 = debug.extend('writerOpts:transform');
-
-  let discard = true;
-  const issues = [];
-  const typeKey = (commit.revert ? 'revert' : commit.type || '').toLowerCase();
-  const typeEntry = module.exports.writerOpts.types.find(
-    (t) => t.type == typeKey && (!t.scope || t.scope == commit.scope)
-  );
-
-  addBangNotes(commit);
-
-  // ? Do not discard commit if special Release-As footer is used
-  if (
-    (commit.footer && RELEASEAS_REGEX.test(commit.footer)) ||
-    (commit.body && RELEASEAS_REGEX.test(commit.body))
-  ) {
-    debug1('saw release-as in body/footer; NOT discarding...');
-    discard = false;
-  }
-
-  // ? However, ignore any commits with skip commands in them
-  if (SKIP_COMMANDS.some((cmd) => commit.subject?.includes(cmd))) {
-    debug1('saw skip command in commit message; discarding...');
-    discard = true;
-  }
-
-  // ? Still, never ignore breaking changes. Additionally, make all scopes
-  // ?  and subjects bold. Scope-less subjects are made sentence case.
-  commit.notes.forEach((note) => {
-    if (note.text) {
-      debug1('saw BC notes for this commit; NOT discarding...');
-      const [firstLine, ...remainder] = note.text.trim().split('\n');
-      // ? Never discard breaking changes
-      discard = false;
-
-      note.title = 'BREAKING CHANGES';
-      note.text =
-        `**${!commit.scope ? sentenceCase(firstLine) : firstLine}**` +
-        remainder.reduce((result, line) => `${result}\n${line}`, '');
-    }
-  });
-
-  // ? Discard entries of unknown or hidden types if discard == true
-  if (discard && (typeEntry === undefined || typeEntry.hidden)) {
-    debug1('decision: commit discarded');
-    return;
-  } else debug1('decision: commit NOT discarded');
-
-  if (typeEntry) commit.type = typeEntry.section;
-  if (commit.scope == '*') commit.scope = '';
-  if (typeof commit.hash == 'string') commit.shortHash = commit.hash.substring(0, 7);
-
-  if (typeof commit.subject == 'string') {
-    const issueRegex = new RegExp(
-      `(${module.exports.writerOpts.issuePrefixes.join('|')})([0-9]+)`,
-      'g'
+    let discard = true;
+    const issues = [];
+    const typeKey = (commit.revert ? 'revert' : commit.type || '').toLowerCase();
+    const typeEntry = config.types.find(
+      (entry) => entry.type == typeKey && (!entry.scope || entry.scope == commit.scope)
     );
 
-    // ? Replace issue refs with URIs
-    commit.subject = commit.subject.replace(issueRegex, (_, prefix, issue) => {
-      const issueStr = `${prefix}${issue}`;
-      const url = expandTemplate(module.exports.writerOpts.issueUrlFormat, {
-        host: context.host,
-        owner: context.owner,
-        repository: context.repository,
-        id: issue,
-        prefix: prefix
-      });
+    addBangNotes(commit);
 
-      issues.push(issueStr);
-      return `[${issueStr}](${url})`;
+    // ? Do not discard commit if special Release-As footer is used
+    if (
+      (commit.footer && RELEASEAS_REGEX.test(commit.footer)) ||
+      (commit.body && RELEASEAS_REGEX.test(commit.body))
+    ) {
+      debug1('saw release-as in body/footer; NOT discarding...');
+      discard = false;
+    }
+
+    // ? However, ignore any commits with skip commands in them
+    if (SKIP_COMMANDS.some((cmd) => commit.subject?.includes(cmd))) {
+      debug1('saw skip command in commit message; discarding...');
+      discard = true;
+    }
+
+    // ? Still, never ignore breaking changes. Additionally, make all scopes
+    // ?  and subjects bold. Scope-less subjects are made sentence case.
+    commit.notes.forEach((note) => {
+      if (note.text) {
+        debug1('saw BC notes for this commit; NOT discarding...');
+        const [firstLine, ...remainder] = note.text.trim().split('\n');
+        // ? Never discard breaking changes
+        discard = false;
+
+        note.title = 'BREAKING CHANGES';
+        note.text =
+          `**${!commit.scope ? sentenceCase(firstLine) : firstLine}**` +
+          remainder.reduce((result, line) => `${result}\n${line}`, '');
+      }
     });
 
-    // ? Replace user refs with URIs
-    commit.subject = commit.subject.replace(
-      // * https://github.com/shinnn/github-username-regex
-      /\B@([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})/gi,
-      (_, user) => {
-        const usernameUrl = expandTemplate(module.exports.writerOpts.userUrlFormat, {
+    // ? Discard entries of unknown or hidden types if discard == true
+    if (discard && (typeEntry === undefined || typeEntry.hidden)) {
+      debug1('decision: commit discarded');
+      return;
+    } else debug1('decision: commit NOT discarded');
+
+    if (typeEntry) commit.type = typeEntry.section;
+    if (commit.scope == '*') commit.scope = '';
+    if (typeof commit.hash == 'string') commit.shortHash = commit.hash.substring(0, 7);
+
+    if (typeof commit.subject == 'string') {
+      const issueRegex = new RegExp(`(${config.issuePrefixes.join('|')})([0-9]+)`, 'g');
+
+      // ? Replace issue refs with URIs
+      commit.subject = commit.subject.replace(issueRegex, (_, prefix, issue) => {
+        const issueStr = `${prefix}${issue}`;
+        const url = expandTemplate(config.issueUrlFormat, {
           host: context.host,
           owner: context.owner,
           repository: context.repository,
-          user
+          id: issue,
+          prefix: prefix
         });
 
-        return `[@${user}](${usernameUrl})`;
-      }
-    );
+        issues.push(issueStr);
+        return `[${issueStr}](${url})`;
+      });
 
-    // ? Make scope-less commit subjects sentence case
-    if (!commit.scope) commit.subject = sentenceCase(commit.subject);
+      // ? Replace user refs with URIs
+      commit.subject = commit.subject.replace(
+        // * https://github.com/shinnn/github-username-regex
+        /\B@([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})/gi,
+        (_, user) => {
+          const usernameUrl = expandTemplate(config.userUrlFormat, {
+            host: context.host,
+            owner: context.owner,
+            repository: context.repository,
+            user
+          });
 
-    // ? Italicize reverts
-    if (typeEntry.type == 'revert') commit.subject = `*${commit.subject}*`;
-  }
+          return `[@${user}](${usernameUrl})`;
+        }
+      );
 
-  // ? Remove references that already appear in the subject
-  commit.references = commit.references.filter(
-    ({ prefix, issue }) => !issues.includes(`${prefix}${issue}`)
-  );
+      // ? Make scope-less commit subjects sentence case
+      if (!commit.scope) commit.subject = sentenceCase(commit.subject);
 
-  debug1('transformed commit: %O', commit);
-  return commit;
-};
-
-module.exports.writerOpts.headerPartial = expandTemplate(templates.header, {
-  compareUrlFormat: expandTemplate(module.exports.writerOpts.compareUrlFormat, {
-    host: templates.partials.host,
-    owner: templates.partials.owner,
-    repository: templates.partials.repository
-  })
-});
-
-module.exports.writerOpts.commitPartial = expandTemplate(templates.commit, {
-  commitUrlFormat: expandTemplate(module.exports.writerOpts.commitUrlFormat, {
-    host: templates.partials.host,
-    owner: templates.partials.owner,
-    repository: templates.partials.repository
-  }),
-  issueUrlFormat: expandTemplate(module.exports.writerOpts.issueUrlFormat, {
-    host: templates.partials.host,
-    owner: templates.partials.owner,
-    repository: templates.partials.repository,
-    id: '{{this.issue}}',
-    prefix: '{{this.prefix}}'
-  })
-});
-
-module.exports.conventionalChangelog = {
-  parserOpts: module.exports.parserOpts,
-  writerOpts: module.exports.writerOpts
-};
-
-module.exports.recommendedBumpOpts = {
-  parserOpts: module.exports.parserOpts,
-  whatBump: (commits) => {
-    const debug1 = debug.extend('writerOpts:transform');
-
-    let level = 2; // ? 0 = major, 1 = minor, 2 = patch (default)
-    let breakings = 0;
-    let features = 0;
-
-    commits.forEach((commit) => {
-      addBangNotes(commit);
-
-      if (commit.notes.length > 0) {
-        breakings += commit.notes.length;
-        level = 0; // ? -> major
-      } else if (commit.type == 'feat' || commit.type == 'feature') {
-        features += 1;
-        level == 2 && (level = 1); // ? patch -> minor
-      }
-    });
-
-    // ? If release <1.0.0 and we were gonna do a major/minor bump, do a
-    // ? minor/patch (respectively) bump instead
-    if (module.exports.writerOpts.preMajor && level < 2) {
-      debug1('preMajor release detected; restricted to minor and patch bumps');
-      level++;
+      // ? Italicize reverts
+      if (typeKey == 'revert') commit.subject = `*${commit.subject}*`;
     }
 
-    const recommendation = {
-      level,
-      reason: `There ${breakings == 1 ? 'is' : 'are'} ${breakings} breaking change${
-        breakings == 1 ? '' : 's'
-      } and ${features} feature${features == 1 ? '' : 's'}`
-    };
+    // ? Remove references that already appear in the subject
+    commit.references = commit.references.filter(
+      ({ prefix, issue }) => !issues.includes(`${prefix}${issue}`)
+    );
 
-    debug1('recommendation: %O');
-    return recommendation;
-  }
+    debug1('transformed commit: %O', commit);
+    return commit;
+  };
+
+  config.writerOpts.headerPartial = expandTemplate(templates.header, {
+    compareUrlFormat: expandTemplate(config.compareUrlFormat, {
+      host: templates.partials.host,
+      owner: templates.partials.owner,
+      repository: templates.partials.repository
+    })
+  });
+
+  config.writerOpts.commitPartial = expandTemplate(templates.commit, {
+    commitUrlFormat: expandTemplate(config.commitUrlFormat, {
+      host: templates.partials.host,
+      owner: templates.partials.owner,
+      repository: templates.partials.repository
+    }),
+    issueUrlFormat: expandTemplate(config.issueUrlFormat, {
+      host: templates.partials.host,
+      owner: templates.partials.owner,
+      repository: templates.partials.repository,
+      id: '{{this.issue}}',
+      prefix: '{{this.prefix}}'
+    })
+  });
+
+  config.conventionalChangelog = {
+    parserOpts: config.parserOpts,
+    writerOpts: config.writerOpts
+  };
+
+  config.recommendedBumpOpts = {
+    parserOpts: config.parserOpts,
+    whatBump: (commits) => {
+      const debug1 = debug.extend('writerOpts:whatBump');
+
+      let level = 2; // ? 0 = major, 1 = minor, 2 = patch (default)
+      let breakings = 0;
+      let features = 0;
+
+      commits.forEach((commit) => {
+        addBangNotes(commit);
+
+        if (commit.notes.length > 0) {
+          breakings += commit.notes.length;
+          level = 0; // ? -> major
+        } else if (commit.type == 'feat' || commit.type == 'feature') {
+          features += 1;
+          level == 2 && (level = 1); // ? patch -> minor
+        }
+      });
+
+      // ? If release <1.0.0 and we were gonna do a major/minor bump, do a
+      // ? minor/patch (respectively) bump instead
+      if (config.preMajor && level < 2) {
+        debug1('preMajor release detected; restricted to minor and patch bumps');
+        level++;
+      }
+
+      const recommendation = {
+        level,
+        reason: `There ${breakings == 1 ? 'is' : 'are'} ${breakings} breaking change${
+          breakings == 1 ? '' : 's'
+        } and ${features} feature${features == 1 ? '' : 's'}`
+      };
+
+      debug1('recommendation: %O');
+      return recommendation;
+    }
+  };
+
+  // ? The order commit type groups will appear in (ordered by section title)
+  const commitGroupOrder = COMMIT_TYPE_CHANGELOG_ORDER.map(
+    (type) =>
+      config.types.find((entry) => entry.type == type).section ||
+      toss(new Error(`unmatched commit type "${type}" in COMMIT_TYPE_CHANGELOG_ORDER`))
+  );
+
+  debug('types: %O', config.types);
+  return config;
 };
 
 debug.extend('exports')('exports: %O', module.exports);
-debug('types: %O', module.exports.writerOpts.types);
