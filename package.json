@@ -29,6 +29,7 @@
     "debug": "^4.3.1",
     "deepmerge": "^4.2.2",
     "is-plain-object": "^5.0.0",
+    "semver": "^6.3.0",
     "toss-expression": "^0.1.0"
   },
   "devDependencies": {
