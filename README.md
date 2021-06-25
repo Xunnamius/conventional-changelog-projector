@@ -25,14 +25,11 @@ Specifically:
 - Better grammar from
   [conventional-recommended-bump](https://www.npmjs.com/package/conventional-recommended-bump)
 
-### `feature` no longer an alias of `feat`
+### Removed `release-as` footer line support
 
-`feature` is no longer documented as a valid alias for the `feat` commit type.
-Looking over the source, it doesn't seem like it actually works as described
-anyway (i.e. `feat` and `feature` commits aren't grouped under the same header).
-
-> Might re-enable this after studying the source a bit more and/or confirmation
-> it actually works.
+Since this configuration is used primarily in
+[semantic-release](https://www.npmjs.com/package/semantic-release)-based flows,
+there is no reason to store release information in commit footers.
 
 ### No longer returns Promises
 
