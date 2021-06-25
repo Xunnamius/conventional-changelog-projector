@@ -58,7 +58,7 @@ than overwriting the default functionality, easier. Just pass your
 [config](https://github.com/conventional-changelog/conventional-changelog-config-spec)
 [overrides](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config),
 which will be used to _tweak_ the default configuration (see
-[the documentation on exported function itself](./index.js) for details).
+[the exported function itself](./index.js) for details).
 
 ### Simpler source organization
 
