@@ -8,6 +8,7 @@ const gitDummyCommit = require('git-dummy-commit');
 const shell = require('shelljs');
 const through = require('through2');
 const { writeFileSync } = require('fs');
+const path = require('path');
 const betterThanBefore = require('better-than-before')();
 const preparing = betterThanBefore.preparing;
 
@@ -49,9 +50,10 @@ betterThanBefore.setups([
     gitDummyCommit(['perf(ngOptions): make it faster', ' closes #1, #2']);
     gitDummyCommit([
       'fix(changelog): proper issue links',
-      ' see #1, fake-user/fake-repo#358'
+      'see #1, fake-user/fake-repo#358'
     ]);
-    gitDummyCommit('revert(ngOptions): bad commit');
+    // ! XXX: gitDummyCommit sucks for this, switch away from it to own code
+    gitDummyCommit('revert(ngOptions): \\"feat(headstrong): bad commit\\"');
     gitDummyCommit('fix(*): oops');
     gitDummyCommit(['fix(changelog): proper issue links', ' see GH-1']);
     gitDummyCommit(['feat(awesome): address EXAMPLE-1']);
@@ -93,7 +95,9 @@ betterThanBefore.setups([
   },
   function () {
     shell.exec('git tag v0.2.0 -m "v0.2.0"');
+    gitDummyCommit('feat(another): more features');
     gitDummyCommit('feature: some more features');
+    gitDummyCommit('feat: even more features');
   },
   function () {
     gitDummyCommit(['feat(*): implementing #5 by @dlmr', ' closes #10']);
@@ -101,8 +105,9 @@ betterThanBefore.setups([
   function () {
     gitDummyCommit(['fix: use npm@5 (@username)']);
     gitDummyCommit([
-      'build(deps): bump @dummy/package from 7.1.2 to 8.0.0',
-      'BREAKING CHANGE: The Change is huge.'
+      'build(deps): bump @dummy/package from 7.1.2 to 8.0.0 (thanks @Xunnamius, @suimannux @user1/@user2, @user3/@+u%+(#bad email@aol.com with help from @merchanz039f9)',
+      'BREAKING CHANGE: The Change is huge. Big. Really big.',
+      'Really. Like super big. Wow! Here are some extra details!'
     ]);
     gitDummyCommit([
       'feat: complex new feature',
@@ -112,7 +117,7 @@ betterThanBefore.setups([
       'Refs: #100',
       'BREAKING CHANGE: this completely changes the API'
     ]);
-    gitDummyCommit(['FEAT(foo)!: incredible new flag FIXES: #33']);
+    gitDummyCommit(['FEAT(FOO)!: incredible new flag FIXES: #33']);
   },
   function () {
     gitDummyCommit([
@@ -120,11 +125,15 @@ betterThanBefore.setups([
       'This reverts commit 1234.'
     ]);
     gitDummyCommit(['revert: feat: custom revert format', 'This reverts commit 5678.']);
-  },
-  function () {
-    gitDummyCommit(['chore: release at different version', 'Release-As: v3.0.2']);
+    gitDummyCommit([
+      'revert: \\"Feat(two): custom revert format 2\\"',
+      'This reverts commit 9101112.'
+    ]);
+    gitDummyCommit('revert: \\"feat(X): broken-but-still-supported revert\\"');
   }
 ]);
+
+// TODO: split up tests that are testing more than one thing (sometimes secretly)
 
 it('should work if there is no semver tag', function (done) {
   preparing(1);
@@ -142,7 +151,7 @@ it('should work if there is no semver tag', function (done) {
         expect(chunk).to.include('1.2.3');
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**travis:** **Continuously integrated.**');
+        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
         expect(chunk).to.include('make it faster');
@@ -151,18 +160,18 @@ it('should work if there is no semver tag', function (done) {
         );
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
-        expect(chunk).to.include('**compile:** **The Change is huge.**');
+        expect(chunk).to.include('**_compile_:** **The Change is huge.**');
         expect(chunk).to.include('Build System');
         expect(chunk).to.include('Continuous Integration');
         expect(chunk).to.include('Features');
         expect(chunk).to.include('Bug Fixes');
         expect(chunk).to.include('Performance Improvements');
         expect(chunk).to.include('Reverts');
-        expect(chunk).to.include('bad commit');
+        expect(chunk).to.include('"feat(headstrong): bad commit"');
         expect(chunk).to.include('BREAKING CHANGE');
 
         expect(chunk).to.not.include('ci');
-        expect(chunk).to.not.include('feat');
+        expect(chunk).to.not.match(/feat(?!\()/);
         expect(chunk).to.not.include('fix');
         expect(chunk).to.not.include('Fix ');
         expect(chunk).to.not.include('perf');
@@ -221,26 +230,26 @@ it('should allow additional "types" configuration to be provided', function (don
         expect(chunk).to.include('1.2.3');
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**travis:** **Continuously integrated.**');
+        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
         expect(chunk).to.include('make it faster');
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
-        expect(chunk).to.include('**compile:** **The Change is huge.**');
+        expect(chunk).to.include('**_compile_:** **The Change is huge.**');
         expect(chunk).to.include('Build System');
         expect(chunk).to.include('Continuous Integration');
         expect(chunk).to.include('Features');
         expect(chunk).to.include('Bug Fixes');
         expect(chunk).to.include('Performance Improvements');
         expect(chunk).to.include('Reverts');
-        expect(chunk).to.include('bad commit');
+        expect(chunk).to.include('"feat(headstrong): bad commit"');
         expect(chunk).to.include('BREAKING CHANGE');
         expect(chunk).to.include('FAKE TYPE SECTION');
         expect(chunk).to.include('New type from');
 
         expect(chunk).to.not.include('ci');
-        expect(chunk).to.not.include('feat');
+        expect(chunk).to.not.match(/feat(?!\()/);
         expect(chunk).to.not.include('fix');
         expect(chunk).to.not.include('Fix ');
         expect(chunk).to.not.include('perf');
@@ -276,7 +285,7 @@ it('should allow "types" to be overridden using callback form', function (done) 
 
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**travis:** **Continuously integrated.**');
+        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
 
@@ -301,7 +310,7 @@ it('should allow "types" to be overridden using second callback form', function 
 
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**travis:** **Continuously integrated.**');
+        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
 
@@ -368,8 +377,8 @@ it('should properly format external repository issues given an `issueUrlFormat`'
       through(function (chunk) {
         chunk = chunk.toString();
         expect(chunk).to.include('[#1](issues://fake-repo/issues/1)');
-        expect(chunk).to.include(
-          '[fake-user/fake-repo#358](issues://standard-version/issues/358)'
+        expect(chunk).to.match(
+          /\[#358<img .*? \/>\]\(issues:\/\/fake-repo\/issues\/358\)/g
         );
         expect(chunk).to.include('[GH-1](issues://fake-repo/issues/1)');
         done();
@@ -477,7 +486,7 @@ it('should not discard commit if there is BREAKING CHANGE', function (done) {
         expect(chunk).to.include('Build System');
         expect(chunk).to.include('Documentation');
         expect(chunk).to.include('Styles');
-        expect(chunk).to.include('Code Refactoring');
+        expect(chunk).to.include('Refactoring');
         expect(chunk).to.include('Tests');
 
         done();
@@ -499,7 +508,7 @@ it('should omit optional ! in breaking commit', function (done) {
         chunk = chunk.toString();
 
         expect(chunk).to.include('### Tests');
-        expect(chunk).to.include('* more tests');
+        expect(chunk).to.include('* More tests');
 
         done();
       })
@@ -536,7 +545,7 @@ it('should work if there is a semver tag', function (done) {
     );
 });
 
-it('should support "feature" as alias for "feat"', function (done) {
+it('should treat "feature" as a perfect alias for "feat"', function (done) {
   preparing(7);
   let i = 0;
 
@@ -552,7 +561,7 @@ it('should support "feature" as alias for "feat"', function (done) {
         function (chunk, _, cb) {
           chunk = chunk.toString();
 
-          expect(chunk).to.include('some more features');
+          expect(chunk).to.include('* Some more features');
           expect(chunk).to.not.include('BREAKING');
 
           i++;
@@ -692,7 +701,7 @@ it('should support non public GitHub repository locations', function (done) {
           '5](https://github.internal.example.com/fake-repo/internal/issues/5'
         );
         expect(chunk).to.include(
-          ' closes [#10](https://github.internal.example.com/fake-repo/internal/issues/10)'
+          '<sup>closes [#10](https://github.internal.example.com/fake-repo/internal/issues/10)'
         );
 
         done();
@@ -700,7 +709,7 @@ it('should support non public GitHub repository locations', function (done) {
     );
 });
 
-it('should only replace with link to user if it is an username', function (done) {
+it('should only replace with link to user if it is a username', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -720,6 +729,17 @@ it('should only replace with link to user if it is an username', function (done)
           '[@dummy](https://github.com/dummy)/package'
         );
         expect(chunk).to.include('bump @dummy/package from');
+        expect(chunk).to.include('[@Xunnamius](https://github.com/Xunnamius),');
+        expect(chunk).to.include('[@suimannux](https://github.com/suimannux) ');
+        expect(chunk).to.include(
+          '[@user1](https://github.com/user1)/[@user2](https://github.com/user2),'
+        );
+        expect(chunk).to.include('[@user3](https://github.com/user3)/@+u%+(#bad');
+        expect(chunk).to.include(
+          'from [@merchanz039f9](https://github.com/merchanz039f9))'
+        );
+
+        expect(chunk).to.not.include('[@aol');
         done();
       })
     );
@@ -739,7 +759,7 @@ it('supports multiple lines of footer information', function (done) {
         chunk = chunk.toString();
         expect(chunk).to.include('closes [#99]');
         expect(chunk).to.include('[#100]');
-        expect(chunk).to.include('this completely changes the API');
+        expect(chunk).to.include('* **This completely changes the API**');
         done();
       })
     );
@@ -775,7 +795,27 @@ it('populates breaking change if ! is present', function (done) {
     .pipe(
       through(function (chunk) {
         chunk = chunk.toString();
-        expect(chunk).to.match(/incredible new flag FIXES: #33\r?\n/);
+        // TODO: next version should sweep the rest of the document for links
+        // TODO: and transform them
+        expect(chunk).to.include('incredible new flag FIXES: #33**\n');
+        done();
+      })
+    );
+});
+
+it('scopes are lowercased', function (done) {
+  preparing(9);
+
+  conventionalChangelogCore({
+    config: getPreset()
+  })
+    .on('error', function (err) {
+      done(err);
+    })
+    .pipe(
+      through(function (chunk) {
+        chunk = chunk.toString();
+        expect(chunk).to.include('foo_:** **incredible new flag');
         done();
       })
     );
@@ -793,26 +833,11 @@ it('parses both default (Revert "<subject>") and custom (revert: <subject>) reve
     .pipe(
       through(function (chunk) {
         chunk = chunk.toString();
-        expect(chunk).to.match(/custom revert format/);
-        expect(chunk).to.match(/default revert format/);
-        done();
-      })
-    );
-});
+        expect(chunk).to.include('*"feat: default revert format"*');
+        expect(chunk).to.include('*Feat: custom revert format*');
+        expect(chunk).to.include('*"Feat(two): custom revert format 2"*');
+        expect(chunk).to.include('*"feat(X): broken-but-still-supported revert"*');
 
-it('should include commits with "Release-As:" footer in CHANGELOG', function (done) {
-  preparing(11);
-
-  conventionalChangelogCore({
-    config: getPreset()
-  })
-    .on('error', function (err) {
-      done(err);
-    })
-    .pipe(
-      through(function (chunk) {
-        chunk = chunk.toString();
-        expect(chunk).to.match(/release at different version/);
         done();
       })
     );

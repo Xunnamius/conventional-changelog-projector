@@ -28,7 +28,7 @@ const debug = require('debug')(`${require(__dirname + '/package.json').name}:ind
  * @returns {typeof import('./defaults')}
  */
 module.exports = (configOverrides) => {
-  const config = require(`${__dirname}/defaults`)();
+  const { config, finish } = require(`${__dirname}/defaults`)();
 
   if (typeof configOverrides == 'function') {
     if (configOverrides.length == 2) configOverrides(null, config);
@@ -44,17 +44,24 @@ module.exports = (configOverrides) => {
         if (val.generateOn) {
           debug('merging "writerOpts.generateOn" via function chaining');
           const _generateOn = config.writerOpts.generateOn;
-          config.writerOpts.generateOn = (...args) =>
-            val.generateOn(...[...args, _generateOn]);
+          config.writerOpts.generateOn = (...args) => {
+            const result = _generateOn(...args);
+            return val.generateOn(...[...args, result]);
+          };
         } else if (val.transform) {
           debug('merging "writerOpts.transform" via function chaining');
           const _transform = config.writerOpts.transform;
-          config.writerOpts.transform = (...args) =>
-            val.transform(...[...args, _transform]);
+          config.writerOpts.transform = (...args) => {
+            const result = _transform(...args);
+            val.transform(...[...args, result]);
+          };
         } else if (val.whatBump) {
           debug('merging "recommendedBumpOpts.whatBump" via function chaining');
           const _whatBump = config.writerOpts.whatBump;
-          config.writerOpts.whatBump = (...args) => val.whatBump(...[...args, _whatBump]);
+          config.writerOpts.whatBump = (...args) => {
+            const result = _whatBump(...args);
+            val.whatBump(...[...args, result]);
+          };
         } else handled = false;
       } else if (key == 'types') {
         debug('merging "types" via array concatenation');
@@ -63,17 +70,15 @@ module.exports = (configOverrides) => {
       }
 
       if (!handled) {
-        debug(`merging "${key}" via deepmerge`);
-        config[key] = !isPlainObject(config[key])
-          ? val
-          : deepmerge(config[key], val, {
-              isMergeableObject: isPlainObject,
-              arrayMerge: (_, source) => source
-            });
+        debug(`merging "${key}" via deepmerge (or overwrite if not plain object)`);
+        isPlainObject(config[key]) && isPlainObject(val)
+          ? deepObjectAssign(config[key], val)
+          : (config[key] = val);
       }
     });
   }
 
+  finish();
   return config;
 };
 

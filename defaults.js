@@ -21,9 +21,13 @@ const SKIP_COMMANDS = ['[skip ci]', '[ci skip]', '[skip cd]', '[cd skip]'];
 // ? types.
 const COMMIT_TYPE_CHANGELOG_ORDER = ['feat', 'fix', 'perf', 'revert'];
 
-// ? Matches the release-as footer (conventional-changelog-conventionalcommits)
-const RELEASEAS_REGEX =
-  /release-as:\s*\w*@?([0-9]+\.[0-9]+\.[0-9a-z]+(-[0-9a-z.]+)?)\s*/i;
+// ? Matches a valid GitHub username with respect to the following:
+// ?   - Avoids matching scoped package names (e.g. @xunnamius/package)
+// ?   - Will match multiple usernames separated by slash (e.g. @user1/@user2)
+const USERNAME_REGEX = /\B@([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})\b(?!\/(?!@))/gi;
+
+// ? Used to normalize the aesthetic of revert CHANGELOG entries
+const DELETE_REVERT_PREFIX_REGEX = /^Revert\s+/;
 
 // ? The character(s) used to reference issues by number on GitHub
 const ISSUE_PREFIXES = ['#'];
@@ -63,6 +67,11 @@ const expandTemplate = (template, context) => {
   return template;
 };
 
+/**
+ * Returns an partially initialized configuration object as well as a `finish`
+ * function. Call `finish()` to complete initialization or behavior is
+ * undefined.
+ */
 module.exports = () => {
   /**
    * Adds additional breaking change notes for the special case
@@ -80,6 +89,15 @@ module.exports = () => {
     }
   };
 
+  // ? Single source of truth for shared values
+  const memory = {
+    issuePrefixes: ISSUE_PREFIXES
+  };
+
+  /**
+   * The default partially-initialized conventional-changelog config object.
+   */
+  // TODO: add this comment to type description instead
   const config = {
     // * Custom configuration keys * \\
     changelogTitle: CHANGELOG_TITLE,
@@ -95,17 +113,24 @@ module.exports = () => {
       // ? https://git-scm.com/docs/git-log#Documentation/git-log.txt---no-merges
       noMerges: null
     },
+    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser
     parserOpts: {
-      headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
-      breakingHeaderPattern: /^(\w*)(?:\((.*)\))?!: (.*)$/,
+      headerPattern: /^(\w*)(?:\(([^\)]*)\))?!?: (.*)$/,
+      breakingHeaderPattern: /^(\w*)(?:\(([^\)]*)\))?!: (.*)$/,
       headerCorrespondence: ['type', 'scope', 'subject'],
       mergePattern: /^Merge pull request #(\d+) from (.*)$/,
       mergeCorrespondence: ['id', 'source'],
       revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
       revertCorrespondence: ['header', 'hash'],
-      issuePrefixes: ISSUE_PREFIXES,
-      noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING']
+      noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
+      get issuePrefixes() {
+        return memory.issuePrefixes;
+      },
+      set issuePrefixes(v) {
+        memory.issuePrefixes = v;
+      }
     },
+    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer
     writerOpts: {
       generateOn: ({ version }) => {
         const debug1 = debug.extend('writerOpts:generateOn');
@@ -129,8 +154,13 @@ module.exports = () => {
     },
 
     // * Spec-compliant configuration keys * \\
+    // ? See: https://github.com/conventional-changelog/conventional-changelog-config-spec
+
     types: [
       { type: 'feat', section: 'Features' },
+      // ? Commits are grouped by section; new types can alias existing types by
+      // ? matching sections:
+      { type: 'feature', section: 'Features' },
       { type: 'fix', section: 'Bug Fixes' },
       { type: 'perf', section: 'Performance Improvements' },
       { type: 'revert', section: 'Reverts' },
@@ -147,11 +177,19 @@ module.exports = () => {
       '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}',
     issueUrlFormat: '{{host}}/{{owner}}/{{repository}}/issues/{{id}}',
     userUrlFormat: '{{host}}/{{user}}',
-    issuePrefixes: ISSUE_PREFIXES
+    get issuePrefixes() {
+      return memory.issuePrefixes;
+    },
+    set issuePrefixes(v) {
+      memory.issuePrefixes = v;
+    }
   };
 
   config.writerOpts.transform = (commit, context) => {
     const debug1 = debug.extend('writerOpts:transform');
+
+    // ? Scope should always be lowercase (or undefined)
+    commit.scope = commit.scope?.toLowerCase();
 
     let discard = true;
     const issues = [];
@@ -161,15 +199,6 @@ module.exports = () => {
     );
 
     addBangNotes(commit);
-
-    // ? Do not discard commit if special Release-As footer is used
-    if (
-      (commit.footer && RELEASEAS_REGEX.test(commit.footer)) ||
-      (commit.body && RELEASEAS_REGEX.test(commit.body))
-    ) {
-      debug1('saw release-as in body/footer; NOT discarding...');
-      discard = false;
-    }
 
     // ? However, ignore any commits with skip commands in them
     if (SKIP_COMMANDS.some((cmd) => commit.subject?.includes(cmd))) {
@@ -203,10 +232,14 @@ module.exports = () => {
     if (commit.scope == '*') commit.scope = '';
     if (typeof commit.hash == 'string') commit.shortHash = commit.hash.substring(0, 7);
 
-    if (typeof commit.subject == 'string') {
-      const issueRegex = new RegExp(`(${config.issuePrefixes.join('|')})([0-9]+)`, 'g');
+    // ? Badly crafted reverts are all header and no subject
+    if (typeKey == 'revert' && !commit.subject) {
+      commit.subject = commit.header.replace(DELETE_REVERT_PREFIX_REGEX, '');
+    }
 
+    if (typeof commit.subject == 'string') {
       // ? Replace issue refs with URIs
+      const issueRegex = new RegExp(`(${config.issuePrefixes.join('|')})([0-9]+)`, 'g');
       commit.subject = commit.subject.replace(issueRegex, (_, prefix, issue) => {
         const issueStr = `${prefix}${issue}`;
         const url = expandTemplate(config.issueUrlFormat, {
@@ -224,7 +257,7 @@ module.exports = () => {
       // ? Replace user refs with URIs
       commit.subject = commit.subject.replace(
         // * https://github.com/shinnn/github-username-regex
-        /\B@([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})/gi,
+        USERNAME_REGEX,
         (_, user) => {
           const usernameUrl = expandTemplate(config.userUrlFormat, {
             host: context.host,
@@ -253,28 +286,46 @@ module.exports = () => {
     return commit;
   };
 
-  config.writerOpts.headerPartial = expandTemplate(templates.header, {
-    compareUrlFormat: expandTemplate(config.compareUrlFormat, {
-      host: templates.partials.host,
-      owner: templates.partials.owner,
-      repository: templates.partials.repository
-    })
-  });
+  // ? The order commit type groups will appear in (ordered by section title)
+  const commitGroupOrder = COMMIT_TYPE_CHANGELOG_ORDER.map(
+    (type) =>
+      config.types.find((entry) => entry.type == type).section ||
+      toss(new Error(`unmatched commit type "${type}" in COMMIT_TYPE_CHANGELOG_ORDER`))
+  );
 
-  config.writerOpts.commitPartial = expandTemplate(templates.commit, {
-    commitUrlFormat: expandTemplate(config.commitUrlFormat, {
-      host: templates.partials.host,
-      owner: templates.partials.owner,
-      repository: templates.partials.repository
-    }),
-    issueUrlFormat: expandTemplate(config.issueUrlFormat, {
-      host: templates.partials.host,
-      owner: templates.partials.owner,
-      repository: templates.partials.repository,
-      id: '{{this.issue}}',
-      prefix: '{{this.prefix}}'
-    })
-  });
+  // ! Must be called after tweaking the default config object !
+  /**
+   * Finish initializing the default config object.
+   */
+  // TODO: add this comment to type description instead
+  const finish = () => {
+    if (!config.writerOpts.headerPartial) {
+      config.writerOpts.headerPartial = expandTemplate(templates.header, {
+        compareUrlFormat: expandTemplate(config.compareUrlFormat, {
+          host: templates.partials.host,
+          owner: templates.partials.owner,
+          repository: templates.partials.repository
+        })
+      });
+    }
+
+    if (!config.writerOpts.commitPartial) {
+      config.writerOpts.commitPartial = expandTemplate(templates.commit, {
+        commitUrlFormat: expandTemplate(config.commitUrlFormat, {
+          host: templates.partials.host,
+          owner: templates.partials.owner,
+          repository: templates.partials.repository
+        }),
+        issueUrlFormat: expandTemplate(config.issueUrlFormat, {
+          host: templates.partials.host,
+          owner: templates.partials.owner,
+          repository: templates.partials.repository,
+          id: '{{this.issue}}',
+          prefix: '{{this.prefix}}'
+        })
+      });
+    }
+  };
 
   config.conventionalChangelog = {
     parserOpts: config.parserOpts,
@@ -321,15 +372,8 @@ module.exports = () => {
     }
   };
 
-  // ? The order commit type groups will appear in (ordered by section title)
-  const commitGroupOrder = COMMIT_TYPE_CHANGELOG_ORDER.map(
-    (type) =>
-      config.types.find((entry) => entry.type == type).section ||
-      toss(new Error(`unmatched commit type "${type}" in COMMIT_TYPE_CHANGELOG_ORDER`))
-  );
-
   debug('types: %O', config.types);
-  return config;
+  return { config, finish };
 };
 
 debug.extend('exports')('exports: %O', module.exports);
