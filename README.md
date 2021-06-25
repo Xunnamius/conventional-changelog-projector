@@ -48,16 +48,17 @@ this issue and can be consumed by both sync and async code alike.
 
 With
 [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits),
-drilling down into the resulting
+drilling down into the resultant
 [config object](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config)
 and altering something like
 [`writerOpts.transform`](https://github.com/conventional-changelog-archived-repos/conventional-changelog-writer#transform)
 is difficult, especially if you only want to tweak rather than _completely
 overwrite_ it. This fork makes deep customizations, including extending rather
 than overwriting the default functionality, easier. Just pass your
-[config overrides](https://github.com/conventional-changelog/conventional-changelog-config-spec),
-which will be used to _tweak_ the default configuration
-([see documentation on exported function](./index.js)).
+[config](https://github.com/conventional-changelog/conventional-changelog-config-spec)
+[overrides](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config),
+which will be used to _tweak_ the default configuration (see
+[the documentation on exported function itself](./index.js) for details).
 
 ### Simpler source organization
 
