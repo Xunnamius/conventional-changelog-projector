@@ -1,9 +1,5 @@
 # conventional-changelog-unconventional
 
-> For usage examples and related documentation, see the original
-> [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
-> package.
-
 This is a fork of and drop-in replacement for
 [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits).
 Along with various bug fixes (regex string mangling, sorting problems, etc), what follows are the major differences:
@@ -63,3 +59,7 @@ for details).
 Simplified the source code by concentrating default configuration to a
 [single file](./defaults.js) with the all the configuration knobs easily
 accessible among the topmatter.
+
+> For usage examples and related documentation, see the original
+> [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
+> package.
