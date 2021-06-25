@@ -18,6 +18,8 @@
   "main": "index.js",
   "files": [
     "/index.js",
+    "/default.js",
+    "/templates",
     "/LICENSE",
     "/package.json",
     "/README.md"
