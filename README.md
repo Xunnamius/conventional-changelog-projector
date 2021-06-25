@@ -39,8 +39,8 @@ anyway (i.e. `feat` and `feature` commits aren't grouped under the same header).
 Calling
 [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
 emits a promise, making the result impossible to reference in synchronized code
-(babel plugins, semantic-release configuration files, etc). This fork is sync
-only and can be consumed by both sync and async code alike.
+(babel plugins, semantic-release configuration files, etc). This fork can be
+consumed by both sync and async code alike.
 
 > This also means `configOverrides` cannot be a Promise.
 
