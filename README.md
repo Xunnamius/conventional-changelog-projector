@@ -6,7 +6,7 @@
 
 This is a fork of and drop-in replacement for
 [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits).
-Along with various bug fixes, what follows are the major differences:
+Along with various bug fixes (regex string mangling, sorting problems, etc), what follows are the major differences:
 
 ### Updated to use modern JS/TypeScript
 
