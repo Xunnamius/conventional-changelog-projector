@@ -45,7 +45,7 @@ betterThanBefore.setups([
     gitDummyCommit('revert(ngOptions): bad commit');
     gitDummyCommit('fix(*): oops');
     gitDummyCommit(['fix(changelog): proper issue links', ' see GH-1']);
-    gitDummyCommit(['feat(awesome): adress EXAMPLE-1']);
+    gitDummyCommit(['feat(awesome): address EXAMPLE-1']);
     gitDummyCommit(['chore(deps): upgrade example from 1 to 2']);
     gitDummyCommit(['chore(release): release 0.0.0']);
   },
