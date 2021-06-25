@@ -56,10 +56,13 @@ emits a Promise, making the result impossible to reference in synchronized code
 (babel plugins, semantic-release config files, conventional-X-cli config). This
 fork avoids the pain, allowing one shared configuration to be consumed by
 [`conventional-changelog-core`](https://www.npmjs.com/package/conventional-changelog-core),
-[`conventional-changelog-cli`](https://www.npmjs.com/package/conventional-changelog-cli) via command line, [`semantic-release`](https://www.npmjs.com/package/semantic-release) via release
-configuration, [`projector`](https://www.npmjs.com/package/@xunnamius/projector) and
-[`projector-pipeline`](https://www.npmjs.com/package/@xunnamius/projector-pipeline) at
-various points in the CI/CD pipeline, and other sync and async tooling.
+[`conventional-changelog-cli`](https://www.npmjs.com/package/conventional-changelog-cli)
+via command line,
+[`semantic-release`](https://www.npmjs.com/package/semantic-release) via release
+configuration, [`projector`](https://www.npmjs.com/package/@xunnamius/projector)
+and
+[`projector-pipeline`](https://www.npmjs.com/package/@xunnamius/projector-pipeline)
+at various points in the CI/CD pipeline, and other sync and async tooling.
 
 > This also means `configOverrides` cannot be a Promise.
 
