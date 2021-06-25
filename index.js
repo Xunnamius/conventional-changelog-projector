@@ -70,10 +70,9 @@ module.exports = (configOverrides) => {
       }
 
       if (!handled) {
-        debug(`merging "${key}" via deepmerge (or overwrite if not plain object)`);
-        isPlainObject(config[key]) && isPlainObject(val)
-          ? deepObjectAssign(config[key], val)
-          : (config[key] = val);
+        const useDOA = isPlainObject(config[key]) && isPlainObject(val);
+        debug(`merging "${key}" via ${useDOA ? 'deep object assignment' : 'overwrite'}`);
+        useDOA ? deepObjectAssign(config[key], val) : (config[key] = val);
       }
     });
   }
