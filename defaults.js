@@ -103,7 +103,7 @@ module.exports = {
       { type: 'perf', section: 'Performance Improvements' },
       { type: 'revert', section: 'Reverts' },
       { type: 'build', section: 'Build System' },
-      { type: 'docs', section: 'Documentation' },
+      { type: 'docs', section: 'Documentation', hidden: true },
       { type: 'style', section: 'Styles', hidden: true },
       { type: 'refactor', section: 'Refactoring', hidden: true },
       { type: 'test', section: 'Tests', hidden: true },
