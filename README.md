@@ -21,7 +21,7 @@
 # conventional-changelog-unconventional
 
 This is a fork of and drop-in replacement for
-[conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits).
+[conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits).
 Along with various bug fixes (regex string mangling, sorting problems, etc),
 what follows are the major differences:
 
@@ -55,10 +55,10 @@ Requiring and calling
 emits a Promise, making the result impossible to reference in synchronized code
 (babel plugins, semantic-release config files, conventional-X-cli config). This
 fork avoids the pain, allowing one shared configuration to be consumed by
-[`conventional-changelog-core`](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core),
-`conventional-changelog-cli` via command line, `semantic-release` via release
-configuration, [`projector`](https://github.com/Xunnamius/projector) and
-[`projector-pipeline`](https://github.com/Xunnamius/projector-pipeline) at
+[`conventional-changelog-core`](https://www.npmjs.com/package/conventional-changelog-core),
+[`conventional-changelog-cli`](https://www.npmjs.com/package/conventional-changelog-cli) via command line, [`semantic-release`](https://www.npmjs.com/package/semantic-release) via release
+configuration, [`projector`](https://www.npmjs.com/package/@xunnamius/projector) and
+[`projector-pipeline`](https://www.npmjs.com/package/@xunnamius/projector-pipeline) at
 various points in the CI/CD pipeline, and other sync and async tooling.
 
 > This also means `configOverrides` cannot be a Promise.
@@ -87,7 +87,7 @@ Simplified the source code by concentrating default configuration to a
 accessible among the topmatter.
 
 > For usage examples and related documentation, see the original
-> [conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
+> [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
 > package.
 
 [badge-blm]: https://api.ergodark.com/badges/blm 'Join the movement!'
