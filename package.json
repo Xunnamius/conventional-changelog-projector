@@ -1,0 +1,48 @@
+{
+  "name": "conventional-changelog-unconventional",
+  "version": "1.0.0",
+  "description": "Custom CHANGELOG generation and semantic release settings based on conventional-changelog-conventionalcommits",
+  "keywords": [
+    "unconventional",
+    "conventional",
+    "conventional-changelog",
+    "conventional-changelog-conventionalcommits"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xunnamius/conventional-changelog-unconventional"
+  },
+  "license": "Unlicense",
+  "author": "Xunnamius",
+  "sideEffects": false,
+  "main": "index.js",
+  "files": [
+    "/index.js",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
+  "scripts": {
+    "test": "mocha --timeout 30000"
+  },
+  "dependencies": {
+    "debug": "^4.3.1",
+    "deepmerge": "^4.2.2",
+    "is-plain-object": "^5.0.0",
+    "toss-expression": "^0.1.0"
+  },
+  "devDependencies": {
+    "better-than-before": "^1.0.0",
+    "chai": "^4.3.4",
+    "conventional-changelog-core": "^4.2.2",
+    "git-dummy-commit": "^1.3.0",
+    "jest": "^27.0.5",
+    "mocha": "^9.0.1",
+    "prettier": "^2.3.1",
+    "shelljs": "^0.8.4",
+    "through2": "^4.0.2"
+  },
+  "engines": {
+    "node": ">=12"
+  }
+}

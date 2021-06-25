@@ -1,0 +1,9 @@
+*.ignore
+*.ignore.*
+ignore.*
+/build
+/.vscode
+/.env
+/external-scripts/bin
+/node_modules
+/coverage
