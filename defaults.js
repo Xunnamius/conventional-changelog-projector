@@ -4,8 +4,6 @@ const { readFileSync } = require('fs');
 const { toss } = require('toss-expression');
 const debug = require('debug')(`${require('./package.json').name}:defaults`);
 
-// TODO: add debug statements throughout
-
 // ? The preamble prefixed to any generated changelog
 const CHANGELOG_TITLE =
   `# Changelog\n\n` +
