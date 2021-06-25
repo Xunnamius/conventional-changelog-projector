@@ -853,7 +853,7 @@ it('should parse default, customized, and malformed revert commits', function (d
     );
 });
 
-it.only('should discard ALL commits with skip commands in the subject', function (done) {
+it('should discard ALL commits with skip commands in the subject', function (done) {
   preparing(11);
 
   conventionalChangelogCore({
