@@ -18,19 +18,21 @@
 
 <!-- prettier-ignore-end -->
 
-# conventional-changelog-unconventional
+# @xunnamius/conventional-changelog-projector
 
-This is a fork of and drop-in replacement for
-[conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits).
-Along with various bug fixes (regex mangling, sorting problems, etc), what
-follows are the major differences:
+This preset is a fork of
+[conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
+built to work within the
+[projector ecosystem](https://github.com/Xunnamius/projector).
 
-### Updated to use modern JS/TypeScript
+> For now, see the original
+> [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
+> package for usage examples and related documentation.
 
-This fork uses a modern Babel-based build chain, is written in TypeScript, is
-fully typed, and supports modern debugging practices.
+## Differences from upstream
 
-> This will be true in the next minor version 😅
+Along with several bug fixes (regex mangling, sorting problems, etc), what
+follows are the major differences versus upstream.
 
 ### A few style tweaks
 
@@ -53,7 +55,8 @@ flows, there is no reason to store release information in commit footers.
 Calling
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
 emits a Promise, making the result impossible to reference in synchronized code
-(babel plugins, semantic-release config files, some cli consumers, npm scripts, etc).
+(babel plugins, semantic-release config files, some cli consumers, npm scripts,
+etc).
 
 This fork avoids the pain, allowing one shared configuration to be consumed by
 [`conventional-changelog-core`](https://www.npmjs.com/package/conventional-changelog-core),
@@ -80,7 +83,7 @@ _completely overwrite_ these key functions via the various
 [config](https://github.com/conventional-changelog/conventional-changelog-config-spec)
 [keys](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config).
 See
-[the function docs](https://github.com/Xunnamius/conventional-changelog-unconventional/blob/main/index.js#L8)
+[the function docs](https://github.com/Xunnamius/conventional-changelog-projector/blob/main/index.js#L8)
 for more details.
 
 ### Simpler source organization
@@ -89,54 +92,55 @@ for more details.
 [single file](./defaults.js) with the all the configuration knobs easily
 accessible among the topmatter.
 
----
+### Updated to use modern JS/TypeScript
 
-> For usage examples and related documentation, see the original
-> [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
-> package.
+This fork uses a modern Babel-based build chain, is written in TypeScript, is
+fully typed, and supports modern debugging practices.
+
+> This will be true in the next minor version 😅
 
 [badge-blm]: https://api.ergodark.com/badges/blm 'Join the movement!'
 [link-blm]: https://secure.actblue.com/donate/ms_blm_homepage_2019
 [badge-maintenance]:
   https://img.shields.io/maintenance/active/2021
   'Is this package maintained?'
-[link-repo]: https://github.com/xunnamius/conventional-changelog-unconventional
+[link-repo]: https://github.com/xunnamius/conventional-changelog-projector
 [badge-last-commit]:
-  https://img.shields.io/github/last-commit/xunnamius/conventional-changelog-unconventional
+  https://img.shields.io/github/last-commit/xunnamius/conventional-changelog-projector
   'Latest commit timestamp'
 [badge-issues]:
-  https://isitmaintained.com/badge/open/Xunnamius/conventional-changelog-unconventional.svg
+  https://isitmaintained.com/badge/open/Xunnamius/conventional-changelog-projector.svg
   'Open issues as a percentage of total issues'
 [link-issues]:
-  https://github.com/Xunnamius/conventional-changelog-unconventional/issues?q=
+  https://github.com/Xunnamius/conventional-changelog-projector/issues?q=
 [badge-pulls]:
-  https://img.shields.io/github/issues-pr/xunnamius/conventional-changelog-unconventional
+  https://img.shields.io/github/issues-pr/xunnamius/conventional-changelog-projector
   'Open pull requests'
 [link-pulls]:
-  https://github.com/xunnamius/conventional-changelog-unconventional/pulls
+  https://github.com/xunnamius/conventional-changelog-projector/pulls
 [badge-codecov]:
-  https://codecov.io/gh/Xunnamius/conventional-changelog-unconventional/branch/main/graph/badge.svg?token=HWRIOBAAPW
+  https://codecov.io/gh/Xunnamius/conventional-changelog-projector/branch/main/graph/badge.svg?token=HWRIOBAAPW
   'Is this package well-tested?'
-[link-codecov]:
-  https://codecov.io/gh/Xunnamius/conventional-changelog-unconventional
+[link-codecov]: https://codecov.io/gh/Xunnamius/conventional-changelog-projector
 [badge-license]:
-  https://img.shields.io/npm/l/conventional-changelog-unconventional
+  https://img.shields.io/npm/l/@xunnamius/conventional-changelog-projector
   "This package's source license"
 [link-license]:
-  https://github.com/Xunnamius/conventional-changelog-unconventional/blob/main/LICENSE
+  https://github.com/Xunnamius/conventional-changelog-projector/blob/main/LICENSE
 [badge-npm]:
-  https://api.ergodark.com/badges/npm-pkg-version/conventional-changelog-unconventional
+  https://api.ergodark.com/badges/npm-pkg-version/@xunnamius/conventional-changelog-projector
   'Install this package using npm or yarn!'
-[link-npm]: https://www.npmjs.com/package/conventional-changelog-unconventional
+[link-npm]:
+  https://www.npmjs.com/package/@xunnamius/conventional-changelog-projector
 [badge-semantic-release]:
   https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
   'This repo practices continuous integration and deployment!'
 [link-semantic-release]: https://github.com/semantic-release/semantic-release
 [badge-size]:
-  https://badgen.net/bundlephobia/minzip/conventional-changelog-unconventional
+  https://badgen.net/bundlephobia/minzip/@xunnamius/conventional-changelog-projector
 [badge-tree-shaking]:
-  https://badgen.net/bundlephobia/tree-shaking/conventional-changelog-unconventional
+  https://badgen.net/bundlephobia/tree-shaking/@xunnamius/conventional-changelog-projector
   'Is this package optimized for Webpack?'
 [link-bundlephobia]:
-  https://bundlephobia.com/result?p=conventional-changelog-unconventional
+  https://bundlephobia.com/result?p=@xunnamius/conventional-changelog-projector
   'Package size (minified and gzipped)'

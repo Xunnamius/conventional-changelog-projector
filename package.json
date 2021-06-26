@@ -1,16 +1,17 @@
 {
-  "name": "conventional-changelog-unconventional",
+  "name": "@xunnamius/conventional-changelog-projector",
   "version": "1.0.0",
-  "description": "Custom CHANGELOG generation and semantic release settings based on conventional-changelog-conventionalcommits",
+  "description": "conventional-changelog @xunnamius/projector preset originally forked from conventional-changelog-conventionalcommits",
   "keywords": [
     "unconventional",
     "conventional",
     "conventional-changelog",
-    "conventional-changelog-conventionalcommits"
+    "conventional-changelog-conventionalcommits",
+    "projector"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Xunnamius/conventional-changelog-unconventional"
+    "url": "https://github.com/Xunnamius/conventional-changelog-projector"
   },
   "license": "Unlicense",
   "author": "Xunnamius",
