@@ -53,8 +53,9 @@ flows, there is no reason to store release information in commit footers.
 Calling
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
 emits a Promise, making the result impossible to reference in synchronized code
-(babel plugins, semantic-release config files, conventional-X-cli config). This
-fork avoids the pain, allowing one shared configuration to be consumed by
+(babel plugins, semantic-release config files, some cli consumers, npm scripts, etc).
+
+This fork avoids the pain, allowing one shared configuration to be consumed by
 [`conventional-changelog-core`](https://www.npmjs.com/package/conventional-changelog-core),
 [`conventional-changelog-cli`](https://www.npmjs.com/package/conventional-changelog-cli)
 via command line,
