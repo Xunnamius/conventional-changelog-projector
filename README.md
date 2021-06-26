@@ -22,15 +22,15 @@
 
 This is a fork of and drop-in replacement for
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits).
-Along with various bug fixes (regex string mangling, sorting problems, etc),
-what follows are the major differences:
+Along with various bug fixes (regex mangling, sorting problems, etc), what
+follows are the major differences:
 
 ### Updated to use modern JS/TypeScript
 
-This rewrite uses a modern Babel-based build chain, is written in TypeScript, is
+This fork uses a modern Babel-based build chain, is written in TypeScript, is
 fully typed, and supports modern debugging practices.
 
-> This will be true in the next version 😅
+> This will be true in the next minor version 😅
 
 ### A few style tweaks
 
@@ -50,8 +50,8 @@ flows, there is no reason to store release information in commit footers.
 
 ### No longer returns Promises
 
-Requiring and calling
-[conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits)
+Calling
+[conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
 emits a Promise, making the result impossible to reference in synchronized code
 (babel plugins, semantic-release config files, conventional-X-cli config). This
 fork avoids the pain, allowing one shared configuration to be consumed by
@@ -68,26 +68,27 @@ at various points in the CI/CD pipeline, and other sync and async tooling.
 
 ### Easier to customize
 
-With
-[conventional-changelog-conventionalcommits](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-conventionalcommits),
-drilling down into the resultant
+When configuring
+[conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits),
+drilling down into the
 [config object](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config)
 and altering something like
 [`writerOpts.transform`](https://github.com/conventional-changelog-archived-repos/conventional-changelog-writer#transform)
-is difficult, especially if you only want to tweak rather than _completely
-overwrite_ it. This fork makes deep customizations, including extending rather
-than overwriting the default functionality, easier. Just pass your
+is not so easy. This fork allows you to tweak and chain invocations rather than
+_completely overwrite_ these key functions via the various
 [config](https://github.com/conventional-changelog/conventional-changelog-config-spec)
-[overrides](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config),
-which will be used to _tweak_ the default configuration (see
-[the exported function itself](https://github.com/Xunnamius/conventional-changelog-unconventional/blob/main/index.js#L8)
-for details).
+[keys](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#config).
+See
+[the function docs](https://github.com/Xunnamius/conventional-changelog-unconventional/blob/main/index.js#L8)
+for more details.
 
 ### Simpler source organization
 
-Simplified the source code by concentrating default configuration to a
+"Simplified" the source code by concentrating default configuration to a
 [single file](./defaults.js) with the all the configuration knobs easily
 accessible among the topmatter.
+
+---
 
 > For usage examples and related documentation, see the original
 > [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
