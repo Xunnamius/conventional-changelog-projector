@@ -1,6 +1,6 @@
 {
   "name": "@xunnamius/conventional-changelog-projector",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "conventional-changelog @xunnamius/projector preset originally forked from conventional-changelog-conventionalcommits",
   "keywords": [
     "unconventional",
@@ -48,5 +48,8 @@
   },
   "engines": {
     "node": ">=12"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
