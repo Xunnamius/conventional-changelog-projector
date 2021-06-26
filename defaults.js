@@ -107,13 +107,12 @@ module.exports = () => {
 
     // conventionalChangelog and recommendedBumpOpts keys are defined below
     gitRawCommitsOpts: {
-      // ? `null` unsets the flag passed to the git CLI, ensuring all commits are
-      // ? analyzed. `true` (old default) hides merge commits while `false` hides
-      // ? non merge commits. See also:
-      // ? https://git-scm.com/docs/git-log#Documentation/git-log.txt---no-merges
+      // ? `null` unsets the flag passed to the git CLI, ensuring all commits
+      // ? are analyzed. `true` (old default) hides merge commits while `false`
+      // ? hides non merge commits. See also: https://shorturl.at/bjCW5
       noMerges: null
     },
-    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser
+    // ? See: https://shorturl.at/aguFJ
     parserOpts: {
       headerPattern: /^(\w*)(?:\(([^\)]*)\))?!?: (.*)$/,
       breakingHeaderPattern: /^(\w*)(?:\(([^\)]*)\))?!: (.*)$/,
@@ -123,6 +122,7 @@ module.exports = () => {
       revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
       revertCorrespondence: ['header', 'hash'],
       noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
+      // ? See: https://shorturl.at/bivyB
       get issuePrefixes() {
         return memory.issuePrefixes;
       },
@@ -130,10 +130,11 @@ module.exports = () => {
         memory.issuePrefixes = v;
       }
     },
-    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer
+    // ? See: https://shorturl.at/qrzS3
     writerOpts: {
       generateOn: ({ version }) => {
         const debug1 = debug.extend('writerOpts:generateOn');
+        debug1(`saw version: ${version}`);
         const decision = !!semver.valid(version) && !semver.prerelease(version);
         debug1(`decision: ${decision}`);
         return decision;
@@ -154,7 +155,7 @@ module.exports = () => {
     },
 
     // * Spec-compliant configuration keys * \\
-    // ? See: https://github.com/conventional-changelog/conventional-changelog-config-spec
+    // ? See: https://shorturl.at/dgY68
 
     // ? Commits are grouped by section; new types can alias existing types by
     // ? matching sections:
