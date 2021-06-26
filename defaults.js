@@ -123,6 +123,7 @@ module.exports = () => {
       revertCorrespondence: ['header', 'hash'],
       noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
       // ? See: https://shorturl.at/bivyB
+      warn: console.warn.bind(console),
       get issuePrefixes() {
         return memory.issuePrefixes;
       },
