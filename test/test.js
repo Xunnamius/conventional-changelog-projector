@@ -171,12 +171,12 @@ it('should work if there is no semver tag', function (done) {
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
         expect(chunk).to.include('**_compile_:** **The Change is huge.**');
-        expect(chunk).to.include('Build System');
-        expect(chunk).to.include('Continuous Integration');
+        expect(chunk).to.include('Build system');
+        expect(chunk).to.include('CI/CD');
         expect(chunk).to.include('Features');
-        expect(chunk).to.include('Bug Fixes');
-        expect(chunk).to.include('Performance Improvements');
-        expect(chunk).to.include('Reverts');
+        expect(chunk).to.include('Fixes');
+        expect(chunk).to.include('Optimizations');
+        expect(chunk).to.include('Reverted');
         expect(chunk).to.include('"feat(headstrong): bad commit"');
         expect(chunk).to.include('BREAKING CHANGE');
 
@@ -192,9 +192,9 @@ it('should work if there is no semver tag', function (done) {
         // CHANGELOG should group sections in order of importance:
         expect(
           chunk.indexOf('BREAKING CHANGE') < chunk.indexOf('Features') &&
-            chunk.indexOf('Features') < chunk.indexOf('Bug Fixes') &&
-            chunk.indexOf('Bug Fixes') < chunk.indexOf('Performance Improvements') &&
-            chunk.indexOf('Performance Improvements') < chunk.indexOf('Reverts')
+            chunk.indexOf('Features') < chunk.indexOf('Fixes') &&
+            chunk.indexOf('Fixes') < chunk.indexOf('Optimizations') &&
+            chunk.indexOf('Optimizations') < chunk.indexOf('Reverted')
         ).to.equal(true);
 
         done();
@@ -247,12 +247,12 @@ it('should allow additional "types" configuration to be provided', function (don
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
         expect(chunk).to.include('**_compile_:** **The Change is huge.**');
-        expect(chunk).to.include('Build System');
-        expect(chunk).to.include('Continuous Integration');
+        expect(chunk).to.include('Build system');
+        expect(chunk).to.include('CI/CD');
         expect(chunk).to.include('Features');
-        expect(chunk).to.include('Bug Fixes');
-        expect(chunk).to.include('Performance Improvements');
-        expect(chunk).to.include('Reverts');
+        expect(chunk).to.include('Fixes');
+        expect(chunk).to.include('Optimizations');
+        expect(chunk).to.include('Reverted');
         expect(chunk).to.include('"feat(headstrong): bad commit"');
         expect(chunk).to.include('BREAKING CHANGE');
         expect(chunk).to.include('FAKE TYPE SECTION');
@@ -270,10 +270,10 @@ it('should allow additional "types" configuration to be provided', function (don
         // CHANGELOG should group sections in order of importance:
         expect(
           chunk.indexOf('BREAKING CHANGE') < chunk.indexOf('Features') &&
-            chunk.indexOf('Features') < chunk.indexOf('Bug Fixes') &&
-            chunk.indexOf('Bug Fixes') < chunk.indexOf('Performance Improvements') &&
-            chunk.indexOf('Performance Improvements') < chunk.indexOf('Reverts') &&
-            chunk.indexOf('Reverts') < chunk.indexOf('FAKE TYPE SECTION')
+            chunk.indexOf('Features') < chunk.indexOf('Fixes') &&
+            chunk.indexOf('Fixes') < chunk.indexOf('Optimizations') &&
+            chunk.indexOf('Optimizations') < chunk.indexOf('Reverted') &&
+            chunk.indexOf('Reverted') < chunk.indexOf('FAKE TYPE SECTION')
         ).to.equal(true);
 
         done();
@@ -300,7 +300,7 @@ it('should allow "types" to be overridden using callback form', function (done) 
         expect(chunk).to.include('**compile:** avoid a bug');
 
         expect(chunk.toLowerCase()).to.not.include('make it faster');
-        expect(chunk).to.not.include('Reverts');
+        expect(chunk).to.not.include('Reverted');
         done();
       })
     );
@@ -325,7 +325,7 @@ it('should allow "types" to be overridden using second callback form', function 
         expect(chunk).to.include('**compile:** avoid a bug');
 
         expect(chunk.toLowerCase()).to.not.include('make it faster');
-        expect(chunk).to.not.include('Reverts');
+        expect(chunk).to.not.include('Reverted');
         done();
       })
     );
@@ -492,12 +492,12 @@ it('should not discard commit if there is BREAKING CHANGE', function (done) {
       through(function (chunk) {
         chunk = chunk.toString();
 
-        expect(chunk).to.include('Continuous Integration');
-        expect(chunk).to.include('Build System');
+        expect(chunk).to.include('CI/CD');
+        expect(chunk).to.include('Build system');
         expect(chunk).to.include('Documentation');
-        expect(chunk).to.include('Styles');
-        expect(chunk).to.include('Refactoring');
-        expect(chunk).to.include('Tests');
+        expect(chunk).to.include('Aesthetics');
+        expect(chunk).to.include('Refactored');
+        expect(chunk).to.include('Test system');
 
         done();
       })
@@ -517,7 +517,7 @@ it('should omit optional ! in breaking commit', function (done) {
       through(function (chunk) {
         chunk = chunk.toString();
 
-        expect(chunk).to.include('### Tests');
+        expect(chunk).to.match(/^#### \S+ Test system$/m);
         expect(chunk).to.include('* More tests');
 
         done();

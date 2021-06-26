@@ -19,7 +19,7 @@ const SKIP_COMMANDS = ['[skip ci]', '[ci skip]', '[skip cd]', '[cd skip]'];
 // ? order they appear in COMMIT_TYPE_CHANGELOG_ORDER. Types that are not listed
 // ? in COMMIT_TYPE_CHANGELOG_ORDER will appear in unicode order _after_ listed
 // ? types.
-const COMMIT_TYPE_CHANGELOG_ORDER = ['feat', 'fix', 'perf', 'revert'];
+const COMMIT_TYPE_CHANGELOG_ORDER = ['feat', 'fix', 'perf', 'build', 'revert'];
 
 // ? Matches a valid GitHub username with respect to the following:
 // ?   - Avoids matching scoped package names (e.g. @xunnamius/package)
@@ -156,21 +156,23 @@ module.exports = () => {
     // * Spec-compliant configuration keys * \\
     // ? See: https://github.com/conventional-changelog/conventional-changelog-config-spec
 
+    // ? Commits are grouped by section; new types can alias existing types by
+    // ? matching sections:
+    // prettier-ignore
     types: [
-      { type: 'feat', section: 'Features' },
-      // ? Commits are grouped by section; new types can alias existing types by
-      // ? matching sections:
-      { type: 'feature', section: 'Features' },
-      { type: 'fix', section: 'Bug Fixes' },
-      { type: 'perf', section: 'Performance Improvements' },
-      { type: 'revert', section: 'Reverts' },
-      { type: 'build', section: 'Build System' },
-      { type: 'docs', section: 'Documentation', hidden: true },
-      { type: 'style', section: 'Styles', hidden: true },
-      { type: 'refactor', section: 'Refactoring', hidden: true },
-      { type: 'test', section: 'Tests', hidden: true },
-      { type: 'ci', section: 'Continuous Integration', hidden: true },
-      { type: 'chore', section: 'Miscellaneous', hidden: true }
+      { type: 'feat',     section: '✨ Features',       hidden: false },
+      { type: 'feature',  section: '✨ Features',       hidden: false },
+      { type: 'fix',      section: '🪄 Fixes',          hidden: false },
+      { type: 'perf',     section: '⚡️ Optimizations',  hidden: false },
+      { type: 'revert',   section: '🔥 Reverted',       hidden: false },
+      { type: 'build',    section: '⚙️ Build system',   hidden: false },
+      { type: 'docs',     section: '📚 Documentation',  hidden: true },
+      { type: 'style',    section: '💎 Aesthetics',     hidden: true },
+      { type: 'refactor', section: '🧙🏿 Refactored',     hidden: true },
+      { type: 'test',     section: '⚗️ Test system',    hidden: true },
+      { type: 'ci',       section: '🏭 CI/CD',          hidden: true },
+      { type: 'cd',       section: '🏭 CI/CD',          hidden: true },
+      { type: 'chore',    section: '🗄️ Miscellaneous',  hidden: true }
     ],
     commitUrlFormat: '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}',
     compareUrlFormat:
