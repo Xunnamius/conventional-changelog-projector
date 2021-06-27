@@ -12,19 +12,20 @@ const debug = require('debug')(`${require(__dirname + '/package.json').name}:ind
  * `configOverrides`, if an object, is recursively merged into the default
  * config, overwriting same keys. The exceptions to this include
  * `writerOpts.generateOn`, `writerOpts.transform`, and
- * `recommendedBumpOpts.whatBump`. Functions at these keys, if present, will be
- * invoked _after_ their original implementations; when invoked, they will
+ * `recommendedBumpOpts.whatBump`. The functions at these keys, if present, will
+ * be invoked _after_ their original implementations; when invoked, they will
  * receive an additional parameter containing the result from the original
- * implementation. The other exception is `types`, which is always merged via
- * array concatenation rather than an overwrite. Every other key is deep-merged.
+ * implementation. The only other exception is `types`, which is always merged
+ * via array concatenation. Every other key is deep-merged using
+ * `Object.assign()`.
  *
  * If `configOverrides` is a function, it should be of the form
- * `configOverrides(config) => void`. Ancient-style callbacks also supported.
+ * `configOverrides(config) => void`. Ancient-style callbacks of the form
+ * `configOverrides(err, config) => void` are also supported.
  *
  * @param {((config: Record<string, unknown>) => void) | ((_: null, config:
-    Record<string, unknown>) => void)}
-    configOverrides
-    A spec-compliant conventional-changelog config object
+    Record<string, unknown>) => void)} configOverrides A spec-compliant
+    conventional-changelog config object
  * @returns {typeof import('./defaults')}
  */
 module.exports = (configOverrides) => {
