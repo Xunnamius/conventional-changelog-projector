@@ -17,7 +17,7 @@ const SKIP_COMMANDS = ['[skip ci]', '[ci skip]', '[skip cd]', '[cd skip]'];
 
 // ? Commits, having been grouped by type, will appear in the CHANGELOG in the
 // ? order they appear in COMMIT_TYPE_CHANGELOG_ORDER. Types that are not listed
-// ? in COMMIT_TYPE_CHANGELOG_ORDER will appear in unicode order _after_ listed
+// ? in COMMIT_TYPE_CHANGELOG_ORDER will appear in input order _after_ listed
 // ? types.
 const COMMIT_TYPE_CHANGELOG_ORDER = ['feat', 'fix', 'perf', 'build', 'revert'];
 
@@ -145,7 +145,9 @@ module.exports = () => {
       // headerPartial and commitPartial sub-keys are defined below
       footerPartial: templates.footer,
       groupBy: 'type',
-      // ? Commit message groupings (e.g. Features) are sorted by their importance
+      // ? Commit message groupings (e.g. Features) are sorted by their
+      // ? importance. Unlike the original version, this is a stable sort algo!
+      // ? See: https://shorturl.at/hqAGX
       commitGroupsSort: (a, b) => {
         a = commitGroupOrder.indexOf(a.title);
         b = commitGroupOrder.indexOf(b.title);
