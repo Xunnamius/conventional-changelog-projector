@@ -1,4 +1,5 @@
 'use strict';
+
 const conventionalChangelogCore = require('conventional-changelog-core');
 const getPreset = require('../index');
 const expect = require('chai').expect;
