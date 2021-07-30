@@ -586,6 +586,7 @@ it('should treat "feature" as a perfect alias for "feat"', function (done) {
     );
 });
 
+// TODO: this test is broken by upstream, investigate what to do about it
 it('should work with unknown host', function (done) {
   preparing(7);
   let i = 0;
