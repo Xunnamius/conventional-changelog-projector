@@ -68,7 +68,7 @@ const expandTemplate = (template, context) => {
 };
 
 /**
- * Returns an partially initialized configuration object as well as a `finish`
+ * Returns a partially initialized configuration object as well as a `finish`
  * function. Call `finish()` to complete initialization or behavior is
  * undefined.
  */
@@ -216,7 +216,7 @@ module.exports = () => {
 
     addBangNotes(commit);
 
-    // ? Still, never ignore breaking changes. Additionally, make all scopes
+    // ? Otherwise, never ignore breaking changes. Additionally, make all scopes
     // ?  and subjects bold. Scope-less subjects are made sentence case.
     commit.notes.forEach((note) => {
       if (note.text) {
