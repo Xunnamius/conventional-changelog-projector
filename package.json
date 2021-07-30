@@ -1,6 +1,6 @@
 {
   "name": "@xunnamius/conventional-changelog-projector",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "conventional-changelog @xunnamius/projector preset originally forked from conventional-changelog-conventionalcommits",
   "keywords": [
     "unconventional",
