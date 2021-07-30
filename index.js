@@ -22,11 +22,6 @@ const debug = require('debug')(`${require(__dirname + '/package.json').name}:ind
  * If `configOverrides` is a function, it should be of the form
  * `configOverrides(config) => void`. Ancient-style callbacks of the form
  * `configOverrides(err, config) => void` are also supported.
- *
- * @param {((config: Record<string, unknown>) => void) | ((_: null, config:
-    Record<string, unknown>) => void)} configOverrides A spec-compliant
-    conventional-changelog config object
- * @returns {typeof import('./defaults')}
  */
 module.exports = (configOverrides) => {
   const { config, finish } = require(`${__dirname}/defaults`)();
