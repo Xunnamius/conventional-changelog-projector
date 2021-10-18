@@ -18,7 +18,7 @@
 
 <!-- prettier-ignore-end -->
 
-# conventional-changelog-projector
+# @xunnamius/conventional-changelog-projector
 
 This preset is a fork of
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
