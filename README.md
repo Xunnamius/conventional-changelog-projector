@@ -35,7 +35,7 @@ built to work within the
 npm install --save-dev @xunnamius/conventional-changelog-projector
 ```
 
-## Differences from upstream
+## Differences from Upstream
 
 Along with several bug fixes (regex mangling, sorting problems, etc), what
 follows are the major differences versus upstream.
