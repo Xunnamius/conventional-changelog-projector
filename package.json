@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/Xunnamius/conventional-changelog-projector"
   },
-  "license": "Unlicense",
+  "license": "MIT",
   "author": "Xunnamius",
   "sideEffects": false,
   "main": "index.js",
@@ -40,11 +40,11 @@
   "devDependencies": {
     "better-than-before": "^1.0.0",
     "chai": "^4.3.4",
-    "conventional-changelog-core": "^4.2.3",
+    "conventional-changelog-core": "^4.2.4",
     "git-dummy-commit": "^1.3.0",
-    "jest": "^27.0.6",
-    "mocha": "^9.0.3",
-    "prettier": "^2.3.2",
+    "jest": "^27.3.0",
+    "mocha": "^9.1.3",
+    "prettier": "^2.4.1",
     "shelljs": "^0.8.4",
     "through2": "^4.0.2"
   },
