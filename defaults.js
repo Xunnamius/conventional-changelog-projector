@@ -2,7 +2,7 @@
 
 const { readFileSync } = require('fs');
 const { toss } = require('toss-expression');
-const debug = require('debug')(`${require(__dirname + '/package.json').name}:defaults`);
+const debug = require('debug')(`${require('./package.json').name}:defaults`);
 const semver = require('semver');
 
 // ? The preamble prefixed to any generated changelog

@@ -2,7 +2,7 @@
 
 const deepObjectAssign = require('assign-deep');
 const { isPlainObject } = require('is-plain-object');
-const debug = require('debug')(`${require(__dirname + '/package.json').name}:index`);
+const debug = require('debug')(`${require('./package.json').name}:index`);
 
 /**
  * Returns an "unconventional" conventional-changelog configuration preset. See
