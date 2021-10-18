@@ -1,6 +1,10 @@
 'use strict';
 
-const { readFileSync } = require('fs');
+// TODO: when using webpack to bundle the TypeScript version of this, ensure to
+// TODO: bundle the handlebars assets as inline resources
+
+const { basename } = require('path');
+const { readFileSync, existsSync } = require('fs');
 const { toss } = require('toss-expression');
 const debug = require('debug')(`${require('./package.json').name}:defaults`);
 const semver = require('semver');
@@ -34,10 +38,10 @@ const ISSUE_PREFIXES = ['#'];
 
 // ? Handlebars template data
 const templates = {
-  commit: readFileSync(`${__dirname}/templates/commit.hbs`, 'utf-8'),
-  footer: readFileSync(`${__dirname}/templates/footer.hbs`, 'utf-8'),
-  header: readFileSync(`${__dirname}/templates/header.hbs`, 'utf-8'),
-  template: readFileSync(`${__dirname}/templates/template.hbs`, 'utf-8'),
+  commit: readFileSync(require.resolve('./templates/commit.hbs'), 'utf-8'),
+  footer: readFileSync(require.resolve('./templates/footer.hbs'), 'utf-8'),
+  header: readFileSync(require.resolve('./templates/header.hbs'), 'utf-8'),
+  template: readFileSync(require.resolve('./templates/template.hbs'), 'utf-8'),
   // ? Handlebars partials for property substitutions using commit context
   partials: {
     owner: '{{#if this.owner}}{{~this.owner}}{{else}}{{~@root.owner}}{{/if}}',
