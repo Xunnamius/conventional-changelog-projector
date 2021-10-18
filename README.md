@@ -96,6 +96,8 @@ accessible among the topmatter.
 This fork uses a modern Babel-based build chain, is written in TypeScript, is
 fully typed, and supports modern debugging practices.
 
+<!-- TODO -->
+
 > This will be true in the next minor version 😅
 
 [badge-blm]: https://api.ergodark.com/badges/blm 'Join the movement!'
