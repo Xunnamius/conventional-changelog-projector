@@ -146,14 +146,9 @@ module.exports = () => {
     skipCommands: SKIP_COMMANDS.map((cmd) => cmd.toLowerCase()),
 
     // * Core configuration keys * \\
+    // ? conventionalChangelog and recommendedBumpOpts keys are defined below
+    gitRawCommitsOpts: {},
 
-    // conventionalChangelog and recommendedBumpOpts keys are defined below
-    gitRawCommitsOpts: {
-      // ? `null` unsets the flag passed to the git CLI, ensuring all commits
-      // ? are analyzed. `true` (old default) hides merge commits while `false`
-      // ? hides non merge commits. See also: https://shorturl.at/bjCW5
-      noMerges: null
-    },
     // ? See: https://shorturl.at/aguFJ
     parserOpts: {
       headerPattern: /^(\w*)(?:\(([^\)]*)\))?!?: (.*)$/,
