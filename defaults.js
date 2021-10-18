@@ -149,7 +149,7 @@ module.exports = () => {
     // ? conventionalChangelog and recommendedBumpOpts keys are defined below
     gitRawCommitsOpts: {},
 
-    // ? See: https://shorturl.at/aguFJ
+    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
     parserOpts: {
       headerPattern: /^(\w*)(?:\(([^\)]*)\))?!?: (.*)$/,
       breakingHeaderPattern: /^(\w*)(?:\(([^\)]*)\))?!: (.*)$/,
@@ -159,7 +159,7 @@ module.exports = () => {
       revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
       revertCorrespondence: ['header', 'hash'],
       noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
-      // ? See: https://shorturl.at/bivyB
+      // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#warn
       warn: console.warn.bind(console),
       get issuePrefixes() {
         return memory.issuePrefixes;
@@ -168,7 +168,8 @@ module.exports = () => {
         memory.issuePrefixes = v;
       }
     },
-    // ? See: https://shorturl.at/qrzS3
+
+    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer#options
     writerOpts: {
       generateOn: (commit) => {
         const debug1 = debug.extend('writerOpts:generateOn');
@@ -202,7 +203,7 @@ module.exports = () => {
       groupBy: 'type',
       // ? Commit message groupings (e.g. Features) are sorted by their
       // ? importance. Unlike the original version, this is a stable sort algo!
-      // ? See: https://shorturl.at/hqAGX
+      // ? See: https://v8.dev/features/stable-sort
       commitGroupsSort: (a, b) => {
         a = commitGroupOrder.indexOf(a.title);
         b = commitGroupOrder.indexOf(b.title);
@@ -213,7 +214,7 @@ module.exports = () => {
     },
 
     // * Spec-compliant configuration keys * \\
-    // ? See: https://shorturl.at/dgY68
+    // ? See: https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.1.0/README.md
 
     // ? Commits are grouped by section; new types can alias existing types by
     // ? matching sections:
