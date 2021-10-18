@@ -40,7 +40,7 @@ npm install --save-dev @xunnamius/conventional-changelog-projector
 Along with several bug fixes (regex mangling, sorting problems, etc), what
 follows are the major differences versus upstream.
 
-### A few style tweaks
+### A Few Style Tweaks
 
 Specifically:
 
@@ -50,13 +50,13 @@ Specifically:
 - Better grammar from
   [conventional-recommended-bump](https://www.npmjs.com/package/conventional-recommended-bump)
 
-### Removed `release-as` footer line support
+### Removed `release-as` Footer Line Support
 
 Since this configuration is used primarily in
 [`semantic-release`](https://www.npmjs.com/package/semantic-release)-based
 flows, there is no reason to store release information in commit footers.
 
-### No longer returns Promises
+### No Longer Returns Promises
 
 Calling
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
@@ -76,7 +76,7 @@ at various points in the CI/CD pipeline, and other sync and async tooling.
 
 > This also means `configOverrides` cannot be a Promise.
 
-### Easier to customize
+### Easier to Customize
 
 When configuring
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits),
@@ -92,13 +92,13 @@ See
 [the function docs](https://github.com/Xunnamius/conventional-changelog-projector/blob/main/index.js#L8)
 for more details.
 
-### Simpler source organization
+### Simpler Source Organization
 
 "Simplified" the source code by concentrating default configuration to a
 [single file](./defaults.js) with the all the configuration knobs easily
 accessible among the topmatter.
 
-### Updated to use modern JS/TypeScript
+### Updated to Use Modern JS/Typescript
 
 This fork uses a modern Babel-based build chain, is written in TypeScript, is
 fully typed, and supports modern debugging practices.
