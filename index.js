@@ -3,6 +3,7 @@
 const deepObjectAssign = require('assign-deep');
 const { isPlainObject } = require('is-plain-object');
 const debug = require('debug')(`${require('./package.json').name}:index`);
+const getDefaults = require('./defaults');
 
 /**
  * Returns an "unconventional" conventional-changelog configuration preset. See
@@ -24,7 +25,7 @@ const debug = require('debug')(`${require('./package.json').name}:index`);
  * `configOverrides(err, config) => void` are also supported.
  */
 module.exports = (configOverrides) => {
-  const { config, finish } = require(`${__dirname}/defaults`)();
+  const { config, finish } = getDefaults();
 
   if (typeof configOverrides == 'function') {
     if (configOverrides.length == 2) configOverrides(null, config);
