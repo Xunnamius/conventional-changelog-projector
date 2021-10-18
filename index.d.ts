@@ -16,11 +16,9 @@
  * `configOverrides(config) => void`. Ancient-style callbacks of the form
  * `configOverrides(err, config) => void` are also supported.
  */
-function main(
+export default function main(
   configOverrides?: (config: Record<string, unknown>) => void
 ): typeof import('./defaults');
-function main(
+export default function main(
   configOverrides?: (err: null, config: Record<string, unknown>) => void
 ): typeof import('./defaults');
-
-export default main;
