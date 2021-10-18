@@ -9,15 +9,16 @@
 [![Pull requests][badge-pulls]][link-pulls]
 [![Codecov][badge-codecov]][link-codecov]
 [![Source license][badge-license]][link-license]
+[![Tree shaking support][badge-tree-shaking]][link-bundlephobia]
+[![Compressed package size][badge-size]][link-bundlephobia]
 [![NPM version][badge-npm]][link-npm]
 [![Uses Semantic Release!][badge-semantic-release]][link-semantic-release]
-<!-- [![Tree shaking support][badge-tree-shaking]][link-bundlephobia] -->
-<!-- [![Compressed package size][badge-size]][link-bundlephobia] -->
+
 <!-- badges-end -->
 
 <!-- prettier-ignore-end -->
 
-# @xunnamius/conventional-changelog-projector
+# conventional-changelog-projector
 
 This preset is a fork of
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
@@ -27,6 +28,12 @@ built to work within the
 > For now, see the original
 > [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
 > package for usage examples and related documentation.
+
+## Install
+
+```bash
+npm install --save-dev @xunnamius/conventional-changelog-projector
+```
 
 ## Differences from upstream
 
@@ -100,6 +107,23 @@ fully typed, and supports modern debugging practices.
 
 > This will be true in the next minor version 😅
 
+## Documentation
+
+Further documentation can be found under [`docs/`][docs].
+
+### License
+
+[![FOSSA analysis][badge-fossa]][link-fossa]
+
+## Contributing and Support
+
+**[New issues][choose-new-issue] and [pull requests][pr-compare] are always
+welcome and greatly appreciated! 🤩** Just as well, you can [star 🌟 this
+project][link-repo] to let me know you found it useful! ✊🏿 Thank you!
+
+See [CONTRIBUTING.md][contributing] and [SUPPORT.md][support] for more
+information.
+
 [badge-blm]: https://api.ergodark.com/badges/blm 'Join the movement!'
 [link-blm]: https://secure.actblue.com/donate/ms_blm_homepage_2019
 [badge-maintenance]:
@@ -110,8 +134,8 @@ fully typed, and supports modern debugging practices.
   https://img.shields.io/github/last-commit/xunnamius/conventional-changelog-projector
   'Latest commit timestamp'
 [badge-issues]:
-  https://isitmaintained.com/badge/open/Xunnamius/conventional-changelog-projector.svg
-  'Open issues as a percentage of total issues'
+  https://img.shields.io/github/issues/Xunnamius/conventional-changelog-projector
+  'Open issues'
 [link-issues]:
   https://github.com/Xunnamius/conventional-changelog-projector/issues?q=
 [badge-pulls]:
@@ -128,6 +152,11 @@ fully typed, and supports modern debugging practices.
   "This package's source license"
 [link-license]:
   https://github.com/Xunnamius/conventional-changelog-projector/blob/main/LICENSE
+[badge-fossa]:
+  https://app.fossa.com/api/projects/custom+27276%2Fgit@github.com:Xunnamius%2Fconventional-changelog-projector.svg?type=large
+  "Analysis of this package's license obligations"
+[link-fossa]:
+  https://app.fossa.com/projects/custom+27276%2Fgit@github.com:Xunnamius%2Fconventional-changelog-projector
 [badge-npm]:
   https://api.ergodark.com/badges/npm-pkg-version/@xunnamius/conventional-changelog-projector
   'Install this package using npm or yarn!'
@@ -145,3 +174,11 @@ fully typed, and supports modern debugging practices.
 [link-bundlephobia]:
   https://bundlephobia.com/result?p=@xunnamius/conventional-changelog-projector
   'Package size (minified and gzipped)'
+[package-json]: package.json
+[docs]: docs
+[choose-new-issue]:
+  https://github.com/Xunnamius/conventional-changelog-projector/issues/new/choose
+[pr-compare]:
+  https://github.com/Xunnamius/conventional-changelog-projector/compare
+[contributing]: CONTRIBUTING.md
+[support]: .github/SUPPORT.md
