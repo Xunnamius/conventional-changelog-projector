@@ -72,6 +72,44 @@ const expandTemplate = (template, context) => {
 };
 
 /**
+ * Returns true if the current working directory (cwd) contains a package.json
+ * file, the grandparent directory is `packages/`, and _its_ parent contains
+ * a package.json file
+ */
+// TODO: break off into separate monorepo tools package
+const isInMonoPkgContext = (dbg) => {
+  const cwd = process.cwd();
+
+  if (!existsSync(`${cwd}/package.json`)) {
+    dbg('monorepo: no (missing package.json in cwd)');
+    return false;
+  }
+
+  if (!existsSync(`${cwd}/../../packages`)) {
+    dbg('monorepo: no (missing packages dir in grandparent)');
+    return false;
+  }
+
+  if (!existsSync(`${cwd}/../../package.json`)) {
+    dbg('monorepo: no (missing package.json in grandparent)');
+    return false;
+  }
+
+  dbg('monorepo: yes');
+  return true;
+};
+
+// TODO: break off this code into separate monorepo tooling (along with other)
+const getMonoPkgName = () => {
+  const cwd = process.cwd();
+  if (!existsSync(`${cwd}/../../packages`)) {
+    throw new Error(`assert failed: illegal cwd: ${cwd}`);
+  }
+
+  return basename(cwd);
+};
+
+/**
  * Returns a partially initialized configuration object as well as a `finish`
  * function. Call `finish()` to complete initialization or behavior is
  * undefined.
@@ -137,11 +175,29 @@ module.exports = () => {
     },
     // ? See: https://shorturl.at/qrzS3
     writerOpts: {
-      generateOn: ({ version }) => {
+      generateOn: (commit) => {
         const debug1 = debug.extend('writerOpts:generateOn');
+        let version = commit.version;
+        let decision = false;
+
         debug1(`saw version: ${version}`);
-        const decision = !!semver.valid(version) && !semver.prerelease(version);
-        debug1(`decision: ${decision}`);
+
+        if (version) {
+          if (isInMonoPkgContext(debug1)) {
+            const pkgName = getMonoPkgName();
+            debug1(`package: ${pkgName}`);
+
+            if (RegExp(`^${pkgName}@.{5,}$`).test(version)) {
+              // ? Remove the package name from the version string
+              commit.version = version = version.split('@').slice(-1)[0];
+              debug1(`using version: ${version}`);
+            }
+          }
+
+          decision = !!semver.valid(version) && !semver.prerelease(version);
+        }
+
+        debug1(`decision: ${decision ? 'NEW block' : 'same block'}`);
         return decision;
       },
       // transform sub-key is defined below
