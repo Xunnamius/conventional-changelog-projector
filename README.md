@@ -35,6 +35,19 @@ built to work within the
 npm install --save-dev @xunnamius/conventional-changelog-projector
 ```
 
+If you're using
+[`lernaPackage`](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#lernapackage)
+or
+[`tagPrefix`](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#tagPrefix)
+configuration options, consider installing the
+[fixed version of conventional-changelog](https://github.com/Xunnamius/conventional-changelog)
+([see also](https://github.com/conventional-changelog/conventional-changelog/pull/865)).
+For example:
+
+```bash
+npm install --save-dev https://gitpkg.now.sh/xunnamius/conventional-changelog/packages/conventional-changelog-cli
+```
+
 ## Differences from Upstream
 
 Along with several bug fixes (regex mangling, sorting problems, etc), what
