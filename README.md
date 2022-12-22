@@ -57,9 +57,10 @@ follows are the major differences versus upstream.
 
 Specifically:
 
-- The scope is made bolded
-- The first line of the subject of breaking changes are bolded (scope excluded)
+- The scope is bolded
 - Scope-less subjects are made sentence case
+- The first line of the subject of breaking changes are bolded and sentence
+  cased (scope is excluded)
 - Reverts are italicized; malformed reverts are normalized
 - Better grammar from
   [conventional-recommended-bump](https://www.npmjs.com/package/conventional-recommended-bump)
@@ -124,10 +125,6 @@ fully typed, and supports modern debugging practices.
 ## Documentation
 
 Further documentation can be found under [`docs/`][docs].
-
-### License
-
-[![FOSSA analysis][badge-fossa]][link-fossa]
 
 ## Contributing and Support
 
