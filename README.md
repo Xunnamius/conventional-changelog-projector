@@ -45,7 +45,7 @@ configuration options, consider installing the
 For example:
 
 ```bash
-npm install --save-dev https://gitpkg.now.sh/xunnamius/conventional-changelog/packages/conventional-changelog-cli
+npm install --save-dev https://xunn.at/conventional-changelog-cli
 ```
 
 ## Differences from Upstream
@@ -137,10 +137,10 @@ project][link-repo] to let me know you found it useful! ✊🏿 Thank you!
 See [CONTRIBUTING.md][contributing] and [SUPPORT.md][support] for more
 information.
 
-[badge-blm]: https://api.ergodark.com/badges/blm 'Join the movement!'
-[link-blm]: https://secure.actblue.com/donate/ms_blm_homepage_2019
+[badge-blm]: https://xunn.at/badge-blm 'Join the movement!'
+[link-blm]: https://xunn.at/donate-blm
 [badge-maintenance]:
-  https://img.shields.io/maintenance/active/2021
+  https://img.shields.io/maintenance/active/2022
   'Is this package maintained?'
 [link-repo]: https://github.com/xunnamius/conventional-changelog-projector
 [badge-last-commit]:
