@@ -57,7 +57,8 @@ follows are the major differences versus upstream.
 
 Specifically:
 
-- The scope and the first line of the subject of breaking changes are made bold
+- The scope is made bolded
+- The first line of the subject of breaking changes are bolded (scope excluded)
 - Scope-less subjects are made sentence case
 - Reverts are italicized; malformed reverts are normalized
 - Better grammar from

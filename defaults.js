@@ -273,18 +273,26 @@ module.exports = () => {
     addBangNotes(commit);
 
     // ? Otherwise, never ignore breaking changes. Additionally, make all scopes
-    // ?  and subjects bold. Scope-less subjects are made sentence case.
+    // ? bold. For multi-line notes, make the first line bold and each
+    // ? successive line indented with two spaces. Scope-less subjects are made
+    // ? sentence case.
     commit.notes.forEach((note) => {
       if (note.text) {
         debug1('saw BC notes for this commit; NOT discarding...');
+
         const [firstLine, ...remainder] = note.text.trim().split('\n');
+        const isMultiline = !!(note.text.trim().split('\n\n').length > 1);
+        const firstLineSentenceCase =
+          /* !commit.scope ? */ sentenceCase(firstLine); /* : firstLine */
+
         // ? Never discard breaking changes
         discard = false;
-
         note.title = 'BREAKING CHANGES';
+
         note.text =
-          `**${!commit.scope ? sentenceCase(firstLine) : firstLine}**` +
-          remainder.reduce((result, line) => `${result}\n${line}`, '');
+          (isMultiline ? `**${firstLineSentenceCase}**` : firstLineSentenceCase) +
+          remainder.reduce((result, line) => `${result}\n  ${line}`, '') +
+          '\n';
       }
     });
 

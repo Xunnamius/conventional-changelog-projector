@@ -144,7 +144,8 @@ betterThanBefore.setups([
   }
 ]);
 
-// TODO: split up tests that are testing more than one thing (sometimes secretly)
+// TODO: Split up tests that are testing more than 1 thing (sometimes secretly).
+// TODO: For instance, test capitalization
 
 it('should work if there is no semver tag', function (done) {
   preparing(1);
@@ -162,7 +163,7 @@ it('should work if there is no semver tag', function (done) {
         expect(chunk).to.include('1.2.3');
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
+        expect(chunk).to.include('Continuously integrated.');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
         expect(chunk).to.include('make it faster');
@@ -171,7 +172,7 @@ it('should work if there is no semver tag', function (done) {
         );
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
-        expect(chunk).to.include('**_compile_:** **The Change is huge.**');
+        expect(chunk).to.include('The Change is huge.');
         expect(chunk).to.include('Build system');
         expect(chunk).to.include('CI/CD');
         expect(chunk).to.include('Features');
@@ -241,13 +242,13 @@ it('should allow additional "types" configuration to be provided', function (don
         expect(chunk).to.include('1.2.3');
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
+        expect(chunk).to.include('Continuously integrated.');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
         expect(chunk).to.include('make it faster');
         expect(chunk).to.include('New build system.');
         expect(chunk).to.include('Not backward compatible.');
-        expect(chunk).to.include('**_compile_:** **The Change is huge.**');
+        expect(chunk).to.include('The Change is huge.');
         expect(chunk).to.include('Build system');
         expect(chunk).to.include('CI/CD');
         expect(chunk).to.include('Features');
@@ -296,7 +297,7 @@ it('should allow "types" to be overridden using callback form', function (done) 
 
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
+        expect(chunk).to.include('Continuously integrated.');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
 
@@ -321,7 +322,7 @@ it('should allow "types" to be overridden using second callback form', function 
 
         expect(chunk).to.include('First build setup');
         expect(chunk).to.include('**travis:** add TravisCI pipeline');
-        expect(chunk).to.include('**_travis_:** **Continuously integrated.**');
+        expect(chunk).to.include('Continuously integrated.');
         expect(chunk).to.include('Amazing new module');
         expect(chunk).to.include('**compile:** avoid a bug');
 
@@ -771,7 +772,7 @@ it('should support multiple lines of footer information', function (done) {
         chunk = chunk.toString();
         expect(chunk).to.include('closes [#99]');
         expect(chunk).to.include('[#100]');
-        expect(chunk).to.include('* **This completely changes the API**');
+        expect(chunk).to.include('* This completely changes the API');
         done();
       })
     );
@@ -809,13 +810,13 @@ it('should populate breaking change notes if ! is present', function (done) {
         chunk = chunk.toString();
         // TODO: next version should sweep the rest of the document for links
         // TODO: and transform them
-        expect(chunk).to.include('incredible new flag FIXES: #33**\n');
+        expect(chunk).to.include('Incredible new flag FIXES: #33\n');
         done();
       })
     );
 });
 
-it('should lowercase scope strings', function (done) {
+it('should bold the first line and indent the following lines on multi-line breaking change notes', function (done) {
   preparing(9);
 
   conventionalChangelogCore({
@@ -827,7 +828,46 @@ it('should lowercase scope strings', function (done) {
     .pipe(
       through(function (chunk) {
         chunk = chunk.toString();
-        expect(chunk).to.include('foo_:** **incredible new flag');
+        expect(chunk).to.include('* **The Change is huge. Big. Really big.**\n');
+        expect(chunk).to.include(
+          '\n  Really. Like super big. Wow! Here are some extra details!\n'
+        );
+        done();
+      })
+    );
+});
+
+it('should lowercase scope strings in non-breaking commits', function (done) {
+  preparing(9);
+
+  conventionalChangelogCore({
+    config: getPreset()
+  })
+    .on('error', function (err) {
+      done(err);
+    })
+    .pipe(
+      through(function (chunk) {
+        chunk = chunk.toString();
+        expect(chunk).to.include('Complex new feature');
+        done();
+      })
+    );
+});
+
+it('should remove scope strings in breaking commits', function (done) {
+  preparing(9);
+
+  conventionalChangelogCore({
+    config: getPreset()
+  })
+    .on('error', function (err) {
+      done(err);
+    })
+    .pipe(
+      through(function (chunk) {
+        chunk = chunk.toString();
+        expect(chunk).to.include('incredible new flag');
         done();
       })
     );
