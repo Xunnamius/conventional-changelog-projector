@@ -519,6 +519,7 @@ it('should omit optional ! in breaking commit', function (done) {
       through(function (chunk) {
         chunk = chunk.toString();
 
+        expect(chunk).to.include('* The Change is huge.');
         expect(chunk).to.match(/^#### \S+ Test system$/m);
         expect(chunk).to.include('* More tests');
 

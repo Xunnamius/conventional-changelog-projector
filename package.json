@@ -1,13 +1,16 @@
 {
   "name": "@xunnamius/conventional-changelog-projector",
   "version": "1.2.1",
-  "description": "conventional-changelog @xunnamius/projector preset originally forked from conventional-changelog-conventionalcommits",
+  "description": "⛔️ [DEPRECATED] conventional-changelog @xunnamius/projector preset originally forked from conventional-changelog-conventionalcommits",
   "keywords": [
     "unconventional",
     "conventional",
     "conventional-changelog",
     "conventional-changelog-conventionalcommits",
-    "projector"
+    "projector",
+    "deprecated",
+    "obsolete",
+    "archived"
   ],
   "repository": {
     "type": "git",
