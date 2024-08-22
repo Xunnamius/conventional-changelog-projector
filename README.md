@@ -1,24 +1,18 @@
-<!-- prettier-ignore-start -->
-
 <!-- badges-start -->
 
 [![Black Lives Matter!][badge-blm]][link-blm]
-[![Maintenance status][badge-maintenance]][link-repo]
-[![Last commit timestamp][badge-last-commit]][link-repo]
-[![Open issues][badge-issues]][link-issues]
-[![Pull requests][badge-pulls]][link-pulls]
-[![Codecov][badge-codecov]][link-codecov]
-[![Source license][badge-license]][link-license]
-[![Tree shaking support][badge-tree-shaking]][link-bundlephobia]
-[![Compressed package size][badge-size]][link-bundlephobia]
-[![NPM version][badge-npm]][link-npm]
-[![Uses Semantic Release!][badge-semantic-release]][link-semantic-release]
+[![!!UNMAINTAINED!!][badge-unmaintained]][link-unmaintained]
 
 <!-- badges-end -->
 
-<!-- prettier-ignore-end -->
+# ⛔️ DEPRECATED/UNMAINTAINED
 
-# @xunnamius/conventional-changelog-projector
+> [!CAUTION]
+>
+> This project has been superseded (and all of its useful bits subsumed) by the
+> [`@-xun/scripts/assets/config/conventional.config.js`](https://github.com/Xunnamius/xscripts)
+> import of the `xscripts` package.
+> [For example](https://github.com/Xunnamius/xscripts/blob/main/conventional.config.js).
 
 This preset is a fork of
 [conventional-changelog-conventionalcommits](https://www.npmjs.com/package/conventional-changelog-conventionalcommits)
@@ -137,6 +131,10 @@ information.
 
 [badge-blm]: https://xunn.at/badge-blm 'Join the movement!'
 [link-blm]: https://xunn.at/donate-blm
+[badge-unmaintained]:
+  https://xunn.at/badge-unmaintained
+  'Unfortunately, this project is unmaintained (forks welcome!)'
+[link-unmaintained]: https://xunn.at/link-unmaintained
 [badge-maintenance]:
   https://img.shields.io/maintenance/active/2023
   'Is this package maintained?'
@@ -169,7 +167,7 @@ information.
 [link-fossa]:
   https://app.fossa.com/projects/custom+27276%2Fgit@github.com:Xunnamius%2Fconventional-changelog-projector
 [badge-npm]:
-  https://api.ergodark.com/badges/npm-pkg-version/@xunnamius/conventional-changelog-projector
+  https://xunn.at/npm-pkg-version/@xunnamius/conventional-changelog-projector
   'Install this package using npm or yarn!'
 [link-npm]:
   https://www.npmjs.com/package/@xunnamius/conventional-changelog-projector
